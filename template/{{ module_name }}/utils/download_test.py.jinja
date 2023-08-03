@@ -1,0 +1,23 @@
+{% include('includes/license_blurb_hashes.jinja') %}
+
+import os
+from . import repo_paths
+from . import download
+
+
+def test_download_http() -> None:
+    url = "https://sherlock-holm.es/stories/plain-text/cano.txt"
+    output_dir = repo_paths.get_dir_artifacts_data_raw("test_download_http")
+    output_path = output_dir / "cano.txt"
+
+    os.makedirs(output_dir, exist_ok=True)
+
+    if os.path.exists(output_path):
+        os.remove(output_path)
+
+    assert not os.path.exists(output_path)
+
+    download.download_http(url, output_path)
+
+    assert os.path.exists(output_path)
+    assert os.stat(output_path).st_size == 3868223

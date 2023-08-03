@@ -20,20 +20,20 @@
 # Configuration
 #---------------------------------------------------------------------------------------
 
-_exclude:
-  - .git
-  - .mypy_cache
-  - .pytest_cache
-  - .venv
-  - copier_ml
-  - copies
-  - tests
-  - .gitignore
-  - copier.yml
-  - LICENSE.txt
-  - poetry.lock
-  - poetry.toml
-  - pyproject.toml
+_subdirectory: template
+
+_jinja_extensions:
+  - jinja2_time.TimeExtension
+
+_tasks:
+  - [
+    "{{ _copier_python }}",
+    "{{ _copier_conf.src_path }}/scripts/post_copy.py",
+    "--python-version",
+    "{{ python_version }}",
+    "--cuda-version",
+    "{{ cuda_version }}"
+  ]
 
 # Questions
 #---------------------------------------------------------------------------------------
@@ -41,3 +41,94 @@ _exclude:
 project_name:
   type: str
   help: Project name
+  placeholder: " My Project"
+
+project_description:
+  type: str
+  help: Project description
+  placeholder: " A short description of the project"
+
+module_name:
+  type: str
+  help: Python module name
+  default: |-
+    {{ project_name | lower | replace('-', '_') | replace(' ', '_') }}
+
+package_name:
+  type: str
+  help: Python package name
+  default: |-
+    {{ module_name | replace('_', '-') }}
+
+package_version:
+  type: str
+  help: Python package version
+  default: 0.1.0
+
+author_name:
+  type: str
+  help: Author name
+  default: ""
+
+author_email:
+  type: str
+  help: Author email
+  default: ""
+
+license:
+  type: str
+  help: License
+  choices:
+    None: none
+    MIT: mit
+    GNU LGPL v3.0: lgpl30
+  default: none
+
+copyright_holder:
+  type: str
+  help: Copyright holder
+  default: |-
+    {{ author_name }}
+  when: |-
+    {{ license != 'none' }}
+
+python_version:
+  type: str
+  help: Python 3.x version
+  default: 3.11
+  placeholder: " 3.x"
+
+use_pytorch:
+  type: bool
+  help: Use Pytorch?
+  default: false
+
+use_tensorflow:
+  type: bool
+  help: Use Tensorflow?
+  default: false
+
+cuda_version:
+  type: str
+  help: CUDA version on your machine (other users can specify theirs when using the project)
+  choices:
+    CPU only: cpu
+    11.7: cuda-11-7
+    11.8: cuda-11-8
+  when: |-
+    {{ use_pytorch or use_tensorflow }}
+
+use_scikit_learn:
+  type: bool
+  help: Use Scikit?
+  default: false
+
+use_comet_ai:
+  type: bool
+  help: Add comet.ai integration?
+  default: true
+
+use_vscode:
+  type: bool
+  help: Add VS Code support?
+  default: true

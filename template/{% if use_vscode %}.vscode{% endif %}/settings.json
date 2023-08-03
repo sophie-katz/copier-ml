@@ -3,7 +3,7 @@
         88
     ],
     "python.defaultInterpreterPath": "${workspaceFolder}/.venv/bin/python3",
-    "python.formatting.provider": "none",
+    "python.formatting.provider": "black",
     "editor.formatOnSave": true,
     "python.linting.mypyArgs": [
         "--follow-imports=silent",
@@ -60,8 +60,5 @@
     ],
     "python.testing.pytestArgs": [
         "--ignore-glob=copies/**"
-    ],
-    "[python]": {
-        "editor.defaultFormatter": "ms-python.black-formatter"
-    }
+    ]
 }

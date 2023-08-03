@@ -1,0 +1,14 @@
+{% include('includes/license_blurb_hashes.jinja') %}
+
+# Python
+__pycache__/
+/.mypy_cache/
+/.pytest_cache/
+
+# PDM
+/pdm.lock
+/.pdm-python
+/__pypackages__/
+
+# Lightning
+/lightning_logs/

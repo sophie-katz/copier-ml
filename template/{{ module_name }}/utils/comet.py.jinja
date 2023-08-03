@@ -1,0 +1,15 @@
+{% include('includes/license_blurb_hashes.jinja') %}
+
+from typing import Optional
+
+from comet_ml import Experiment
+
+from .settings import Settings
+
+def create_experiment(settings: Settings) -> Optional[Experiment]:
+    if settings.comet_enabled:
+        return Experiment(
+            api_key=settings.comet_api_key,
+            project_name=settings.comet_project_name,
+            workspace=settings.comet_workspace,
+        )

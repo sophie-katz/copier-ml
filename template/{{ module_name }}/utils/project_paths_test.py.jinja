@@ -1,0 +1,15 @@
+{% include('includes/license_blurb_hashes.jinja') %}
+
+from .repo_paths import *
+import pathlib
+import pytest
+
+
+def test_get_repo_root_path_good() -> None:
+    result = get_repo_root_path()
+    assert (result / "ml").is_dir()
+
+
+def test_get_repo_root_path_bad() -> None:
+    with pytest.raises(Exception):
+        get_repo_root_path(pathlib.Path.home())

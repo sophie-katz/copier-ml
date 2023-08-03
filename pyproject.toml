@@ -9,6 +9,7 @@ packages = [{include = "copier_ml"}]
 
 [tool.poetry.dependencies]
 python = "^3.11"
+jinja2-time = "^0.2.0"
 
 
 [tool.poetry.group.development.dependencies]
