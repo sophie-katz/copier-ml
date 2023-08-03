@@ -1,3 +1,6 @@
 copies/
 .venv/
 poetry.lock
+__pycache__/
+/.mypy_cache/
+/.pytest_cache/

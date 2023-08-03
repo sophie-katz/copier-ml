@@ -25,7 +25,7 @@ Then tests rendered files against expected results.
 
 import os
 import copier
-from copier_ml.testing_utils import (
+from tests.testing_utils import (
     before_integration_test,
     COPIES_DIRECTORY,
     FileTest,
