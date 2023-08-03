@@ -1,29 +1,25 @@
-[tool.poetry]
+[project]
 name = "copier-ml"
 version = "0.1.0"
 description = ""
-authors = ["Sophie Katz <sophie@sophiekatz.us>"]
-license = "MIT"
+authors = [{ name = "Sophie Katz", email = "sophie@sophiekatz.us" }]
+dependencies = [
+    "jinja2-time>=0.2.0",
+    "copier>=8.1.0",
+]
+requires-python = ">=3.11"
 readme = "README.md"
-packages = [{include = "copier_ml"}]
+license = { text = "MIT" }
 
-[tool.poetry.dependencies]
-python = "^3.11"
-jinja2-time = "^0.2.0"
-
-
-[tool.poetry.group.development.dependencies]
-copier = "^8.1.0"
-pylance = "^0.5.10"
-pytest = "^7.4.0"
-pycodestyle = "^2.11.0"
-mypy = "^1.4.1"
-bandit = "^1.7.5"
-pydocstyle = "^6.3.0"
-vulture = "^2.7"
-isort = "^5.12.0"
-black = "^23.7.0"
-
-[build-system]
-requires = ["poetry-core"]
-build-backend = "poetry.core.masonry.api"
+[tool.pdm.dev-dependencies]
+dev = [
+    "pylance>=0.5.10",
+    "pytest>=7.4.0",
+    "pycodestyle>=2.11.0",
+    "mypy>=1.4.1",
+    "bandit>=1.7.5",
+    "pydocstyle>=6.3.0",
+    "vulture>=2.7",
+    "isort>=5.12.0",
+    "black>=23.7.0",
+]
