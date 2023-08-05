@@ -21,20 +21,20 @@ import dataclasses
 import os
 import shutil
 import io
-from typing import Callable, Optional
+from typing import Callable, Optional, Dict
 
 COPIES_DIRECTORY = os.path.join(os.getcwd(), "copies")
 
 
-def before_integration_test() -> None:
+def before_integration_test(copy_name: str) -> None:
     """Code to be run before all integration tests."""
     if not os.path.exists(".git") or not os.path.exists("copier.yml"):
         raise Exception(
             "this script must be run from the root directory of the copier-ml repository"
         )
 
-    shutil.rmtree(COPIES_DIRECTORY, ignore_errors=True)
-    os.mkdir(COPIES_DIRECTORY)
+    os.makedirs(COPIES_DIRECTORY, exist_ok=True)
+    shutil.rmtree(os.path.join(COPIES_DIRECTORY, copy_name), ignore_errors=True)
 
 
 @dataclasses.dataclass
@@ -65,8 +65,8 @@ class FileTest:
 @dataclasses.dataclass
 class DirectoryTest:
     optional: bool = False
-    child_files: dict[str, FileTest] = dataclasses.field(default_factory=dict)
-    child_directories: dict[str, "DirectoryTest"] = dataclasses.field(
+    child_files: Dict[str, FileTest] = dataclasses.field(default_factory=dict)
+    child_directories: Dict[str, "DirectoryTest"] = dataclasses.field(
         default_factory=dict
     )
     ignore_children: bool = False

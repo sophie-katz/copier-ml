@@ -20,8 +20,10 @@
 import argparse
 import os
 import re
+import shutil
 import subprocess
 import sys
+from typing import List, Dict
 
 PYTHON_VERSION_PATTERN = re.compile(r"^3\.\d+$")
 
@@ -30,7 +32,7 @@ CUDA_VERSION_CHOICES = ["not_applicable", "cpu", "cuda-11-7", "cuda-11-8"]
 
 def create_argument_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(
-        description="Post copy script for the ML copier template", exit_on_error=False
+        description="Post copy script for the ML copier template"
     )
 
     parser.add_argument(
@@ -87,10 +89,10 @@ def venv_exists(copy_directory: str) -> bool:
     return os.path.exists(os.path.join(copy_directory, ".venv"))
 
 
-def create_venv(copy_directory: str, python_version: str) -> None:
+def create_venv(pdm_path: str, copy_directory: str, python_version: str) -> None:
     print(f"info: creating venv for python {python_version}...")
 
-    result = subprocess.run(["pdm", "venv", "create", "-f", python_version])
+    result = subprocess.run([pdm_path, "venv", "create", "-f", python_version])
 
     if result.returncode == 0:
         print("info: venv successfully created")
@@ -103,11 +105,11 @@ def has_pdm_lock(cuda_version: str) -> bool:
     return cuda_version != "not_applicable"
 
 
-def get_pdm_install_arguments(cuda_version: str) -> list[str]:
+def get_pdm_lock_arguments(pdm_path: str, cuda_version: str) -> List[str]:
     if has_pdm_lock(cuda_version):
         return [
-            "pdm",
-            "install",
+            pdm_path,
+            "lock",
             "-G",
             cuda_version,
             "-L",
@@ -115,20 +117,21 @@ def get_pdm_install_arguments(cuda_version: str) -> list[str]:
             "--skip=:pre",
         ]
     else:
-        return ["pdm", "install"]
+        return [pdm_path, "lock", "--skip=:pre"]
 
 
-def pdm_install(cuda_version: str) -> None:
-    print(f"info: installing dependencies from pyproject.toml with pdm...")
+def pdm_lock(pdm_path: str, cuda_version: str) -> None:
+    print(f"info: locking dependencies from pyproject.toml with pdm...")
 
-    result = subprocess.run(get_pdm_install_arguments(cuda_version))
+    result = subprocess.run(
+        get_pdm_lock_arguments(pdm_path, cuda_version),
+        env={"PDM_IGNORE_ACTIVE_VENV": "true"},
+    )
 
     if result.returncode == 0:
-        print("info: dependencies successfully installed")
+        print("info: dependencies successfully locked")
     else:
-        print(
-            f"error: unable to install dependencies (exit status: {result.returncode})"
-        )
+        print(f"error: unable to lock dependencies (exit status: {result.returncode})")
         sys.exit(1)
 
 
@@ -166,12 +169,20 @@ if __name__ == "__main__":
         print()
         print("note: it does not appear to be because .copier-answers.yml is missing")
 
+    pdm_path = shutil.which("pdm")
+
+    if pdm_path is None:
+        print("error: pdm must be installed and on the PATH")
+        sys.exit(1)
+
+    print(f"info: using pdm at {pdm_path}")
+
     if venv_exists(copy_directory):
         print(f"info: {copy_directory} already has a venv")
     else:
-        create_venv(copy_directory, arguments.python_version)
+        create_venv(pdm_path, copy_directory, arguments.python_version)
 
-    pdm_install(arguments.cuda_version)
+    pdm_lock(pdm_path, arguments.cuda_version)
 
     if has_pdm_lock(arguments.cuda_version):
         use_pdm_lock(arguments.cuda_version)

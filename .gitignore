@@ -5,3 +5,6 @@ __pycache__/
 /.mypy_cache/
 /.pytest_cache/
 /.pdm-python
+/copier_ml.egg-info/
+/pdm.lock
+/__pypackages__/
