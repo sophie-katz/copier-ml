@@ -153,6 +153,12 @@ def _test_file_python_version_with_dot(text: str) -> None:
     assert PYTHON_VERSION_WITH_DASH_PATTERN.search(text) is None
 
 
+def _test_file_formatting_black(path: str) -> None:
+    result = subprocess.run(["black", "--check", path])
+
+    assert result.returncode == 0
+
+
 def _create_directory_test_minimal(license: str) -> DirectoryTest:
     result = DirectoryTest(
         child_files={
@@ -224,7 +230,10 @@ def _create_directory_test_minimal(license: str) -> DirectoryTest:
                                 license != "none", text
                             ),
                             _test_file_python_version_with_dot,
-                        ]
+                        ],
+                        on_path=[
+                            _test_file_formatting_black,
+                        ],
                     ),
                 },
                 child_directories={
@@ -242,7 +251,10 @@ def _create_directory_test_minimal(license: str) -> DirectoryTest:
                                         license != "none", text
                                     ),
                                     _test_file_python_version_with_dot,
-                                ]
+                                ],
+                                on_path=[
+                                    _test_file_formatting_black,
+                                ],
                             ),
                             "download.py": FileTest(
                                 on_text=[
@@ -256,7 +268,10 @@ def _create_directory_test_minimal(license: str) -> DirectoryTest:
                                         license != "none", text
                                     ),
                                     _test_file_python_version_with_dot,
-                                ]
+                                ],
+                                on_path=[
+                                    _test_file_formatting_black,
+                                ],
                             ),
                             "extract_test.py": FileTest(
                                 on_text=[
@@ -270,7 +285,10 @@ def _create_directory_test_minimal(license: str) -> DirectoryTest:
                                         license != "none", text
                                     ),
                                     _test_file_python_version_with_dot,
-                                ]
+                                ],
+                                on_path=[
+                                    _test_file_formatting_black,
+                                ],
                             ),
                             "extract.py": FileTest(
                                 on_text=[
@@ -284,7 +302,10 @@ def _create_directory_test_minimal(license: str) -> DirectoryTest:
                                         license != "none", text
                                     ),
                                     _test_file_python_version_with_dot,
-                                ]
+                                ],
+                                on_path=[
+                                    _test_file_formatting_black,
+                                ],
                             ),
                             "project_paths_test.py": FileTest(
                                 on_text=[
@@ -312,7 +333,10 @@ def _create_directory_test_minimal(license: str) -> DirectoryTest:
                                         license != "none", text
                                     ),
                                     _test_file_python_version_with_dot,
-                                ]
+                                ],
+                                on_path=[
+                                    _test_file_formatting_black,
+                                ],
                             ),
                             "__init__.py": FileTest(on_text=[_test_file_empty]),
                         }
@@ -346,8 +370,16 @@ def _create_directory_test_minimal(license: str) -> DirectoryTest:
             ),
             "scripts": DirectoryTest(
                 child_files={
-                    "check_pdm_lock.py": FileTest(),
-                    "use_pdm_lock.py": FileTest(),
+                    "check_pdm_lock.py": FileTest(
+                        on_path=[
+                            _test_file_formatting_black,
+                        ]
+                    ),
+                    "use_pdm_lock.py": FileTest(
+                        on_path=[
+                            _test_file_formatting_black,
+                        ]
+                    ),
                 }
             ),
         },

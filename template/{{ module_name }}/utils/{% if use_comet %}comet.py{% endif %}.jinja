@@ -4,6 +4,7 @@ from comet_ml import Experiment
 
 from .settings import Settings
 
+
 def create_experiment(settings: Settings) -> Optional[Experiment]:
     if settings.comet_enabled:
         return Experiment(

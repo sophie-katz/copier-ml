@@ -40,6 +40,7 @@ def before_integration_test(copy_name: str) -> None:
 class FileTest:
     optional: bool = False
     on_text: List[Callable[[str], None]] = dataclasses.field(default_factory=list)
+    on_path: List[Callable[[str], None]] = dataclasses.field(default_factory=list)
 
     def run(self, path: str) -> None:
         if not self.optional:
@@ -55,6 +56,10 @@ class FileTest:
 
             for f in self.on_text:
                 f(text)
+
+            for f in self.on_path:
+                f(path)
+
 
 @dataclasses.dataclass
 class DirectoryTest:

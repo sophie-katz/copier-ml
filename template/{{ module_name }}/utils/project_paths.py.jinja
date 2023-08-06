@@ -41,9 +41,7 @@ def _optionally_create_and_return(path: pathlib.Path, create: bool) -> pathlib.P
     return path
 
 
-def get_project_root_path(
-    cwd: Optional[pathlib.Path] = None
-) -> pathlib.Path:
+def get_project_root_path(cwd: Optional[pathlib.Path] = None) -> pathlib.Path:
     start: pathlib.Path
 
     if cwd is None:
@@ -53,7 +51,11 @@ def get_project_root_path(
 
     result = start
 
-    while not _is_git_repo(result) and not _is_copier_ml_project(result) and result != result.parent:
+    while (
+        not _is_git_repo(result)
+        and not _is_copier_ml_project(result)
+        and result != result.parent
+    ):
         result = result.parent
 
     if not _is_git_repo(result):
