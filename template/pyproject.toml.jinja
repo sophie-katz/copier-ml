@@ -12,6 +12,10 @@ dependencies = [{% if use_pytorch %}
     "keras-tuner",{% endif %}{% if use_scikit_learn %}
     "scikit-learn",{% endif %}{% if use_comet %}
     "comet-ml",{% endif %}{% if use_pytorch or use_tensorflow or use_scikit_learn or use_comet %}
+    "tqdm",
+    "requests",
+    "numpy",
+    "pandas",
 {% endif %}]
 requires-python = ">={{ python_version | replace('-', '.') }},<3.{{ (python_version.split('-')[1] | int) + 1 }}"
 readme = "README.md"
@@ -19,10 +23,10 @@ readme = "README.md"
 [tool.setuptools]
 py-modules = ["{{ module_name }}"]
 
-[tool.pdm.scripts]
+{% if use_pytorch %}[tool.pdm.scripts]
 pre_lock = { shell = "python3 scripts/check_pdm_lock.py" }
 pre_install = { shell = "python3 scripts/check_pdm_lock.py" }
-
+{% endif %}
 [tool.pdm.dev-dependencies]
 dev = [
     "bandit",
@@ -41,8 +45,6 @@ dev = [
     "seaborn",
     "vulture",
     "pyyaml>=6",
-    "tqdm",
-    "requests",
 ]
 {%if use_pytorch %}
 [project.optional-dependencies]

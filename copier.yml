@@ -32,7 +32,7 @@ _tasks:
     "--python-version",
     "{{ python_version }}",
     "--cuda-version",
-    "{{ cuda_version }}"
+    "{% if not cuda_version %}not_applicable{% else %}{{ cuda_version }}{% endif %}",
   ]
 
 # Questions
@@ -120,7 +120,7 @@ cuda_version:
     11.7: cuda-11-7
     11.8: cuda-11-8
   when: |-
-    {{ use_pytorch or use_tensorflow }}
+    {{ use_pytorch }}
 
 use_scikit_learn:
   type: bool
