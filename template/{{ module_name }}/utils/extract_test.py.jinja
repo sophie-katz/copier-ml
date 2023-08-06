@@ -1,14 +1,12 @@
 {% include('includes/license_blurb_hashes.jinja') %}import os
 from . import extract
-from . import repo_paths
+from . import project_paths
 from . import download
 
 
 def test_extract_archive() -> None:
     url = "https://download.pytorch.org/tutorial/data.zip"
-    download_dir = repo_paths.get_dir_artifacts_data_raw(
-        "test_extract_archive", create=True
-    )
+    download_dir = project_paths.get_dir_artifacts_data_raw()
     archive_path = download_dir / "data.zip"
 
     download.download_http(url, archive_path)
@@ -16,9 +14,7 @@ def test_extract_archive() -> None:
     assert os.path.exists(archive_path)
     assert os.stat(archive_path).st_size == 2882130
 
-    extract_dir = repo_paths.get_dir_artifacts_data_intermediate(
-        "test_extract_archive", create=True
-    )
+    extract_dir = project_paths.get_dir_artifacts_data_intermediate()
 
     extract.extract_archive(archive_path, extract_dir)
 

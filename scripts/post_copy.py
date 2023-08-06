@@ -103,11 +103,11 @@ def has_pdm_lock(cuda_version: str) -> bool:
     return cuda_version != "not_applicable"
 
 
-def get_pdm_lock_arguments(pdm_path: str, cuda_version: str) -> List[str]:
+def get_pdm_install_arguments(pdm_path: str, cuda_version: str) -> List[str]:
     if has_pdm_lock(cuda_version):
         return [
             pdm_path,
-            "lock",
+            "install",
             "-G",
             cuda_version,
             "-L",
@@ -115,21 +115,23 @@ def get_pdm_lock_arguments(pdm_path: str, cuda_version: str) -> List[str]:
             "--skip=:pre",
         ]
     else:
-        return [pdm_path, "lock", "--skip=:pre"]
+        return [pdm_path, "install", "--skip=:pre"]
 
 
-def pdm_lock(pdm_path: str, cuda_version: str) -> None:
-    print(f"info: locking dependencies from pyproject.toml with pdm...")
+def pdm_install(pdm_path: str, cuda_version: str) -> None:
+    print(f"info: installing dependencies from pyproject.toml with pdm...")
 
     result = subprocess.run(
-        get_pdm_lock_arguments(pdm_path, cuda_version),
+        get_pdm_install_arguments(pdm_path, cuda_version),
         env={"PDM_IGNORE_ACTIVE_VENV": "true"},
     )
 
     if result.returncode == 0:
-        print("info: dependencies successfully locked")
+        print("info: dependencies successfully installed")
     else:
-        print(f"error: unable to lock dependencies (exit status: {result.returncode})")
+        print(
+            f"error: unable to install dependencies (exit status: {result.returncode})"
+        )
         sys.exit(1)
 
 
@@ -162,6 +164,11 @@ if __name__ == "__main__":
 
     copy_directory = os.getcwd()
 
+    result = subprocess.run(["git", "init", "."])
+
+    if result.returncode == 1:
+        sys.exit(1)
+
     if not is_copy_directory(copy_directory):
         print(f"error: {copy_directory} must be the output of copier for this template")
         print()
@@ -182,7 +189,7 @@ if __name__ == "__main__":
             pdm_path, copy_directory, str(arguments.python_version).replace("-", ".")
         )
 
-    pdm_lock(pdm_path, arguments.cuda_version)
+    pdm_install(pdm_path, arguments.cuda_version)
 
     if has_pdm_lock(arguments.cuda_version):
         use_pdm_lock(arguments.cuda_version)

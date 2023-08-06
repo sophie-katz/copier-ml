@@ -1,13 +1,13 @@
-{% include('includes/license_blurb_hashes.jinja') %}from .repo_paths import *
+{% include('includes/license_blurb_hashes.jinja') %}from .project_paths import *
 import pathlib
 import pytest
 
 
-def test_get_repo_root_path_good() -> None:
-    result = get_repo_root_path()
-    assert (result / "ml").is_dir()
+def test_get_project_root_path_good() -> None:
+    result = get_project_root_path()
+    assert (result / "{{ module_name }}").is_dir()
 
 
-def test_get_repo_root_path_bad() -> None:
+def test_get_project_root_path_bad() -> None:
     with pytest.raises(Exception):
-        get_repo_root_path(pathlib.Path.home())
+        get_project_root_path(pathlib.Path.home())

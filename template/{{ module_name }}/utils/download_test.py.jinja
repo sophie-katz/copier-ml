@@ -1,11 +1,11 @@
 {% include('includes/license_blurb_hashes.jinja') %}import os
-from . import repo_paths
+from . import project_paths
 from . import download
 
 
 def test_download_http() -> None:
     url = "https://sherlock-holm.es/stories/plain-text/cano.txt"
-    output_dir = repo_paths.get_dir_artifacts_data_raw("test_download_http")
+    output_dir = project_paths.get_dir_artifacts_data_raw()
     output_path = output_dir / "cano.txt"
 
     os.makedirs(output_dir, exist_ok=True)

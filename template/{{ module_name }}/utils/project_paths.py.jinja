@@ -3,8 +3,6 @@ import os
 from typing import Optional
 import re
 
-_PROJECT_NAME_PATTERN = re.compile(r"[a-zA-Z_][a-zA-Z0-9_]*")
-
 
 def _is_git_repo(path: pathlib.Path) -> bool:
     if not path.is_dir():
@@ -17,32 +15,23 @@ def _is_git_repo(path: pathlib.Path) -> bool:
     return False
 
 
-def _is_ml_repo(path: pathlib.Path) -> bool:
+def _is_copier_ml_project(path: pathlib.Path) -> bool:
     if not path.is_dir():
         return False
 
-    has_core = False
-    has_dot_vscode = False
     has_readme = False
+    has_copier_answers = False
+    has_module = False
 
     for child in path.iterdir():
-        if child.name == "ml":
-            has_core = True
-        elif child.name == ".vscode":
-            has_dot_vscode = True
-        elif child.name.lower() == "readme.md":
-            with open(child, "r") as file:
-                if "Sophie's ML Monorepo" in file.read():
-                    has_readme = True
+        if child.name.lower() == "readme.md":
+            has_readme = True
+        elif child.name.lower() == ".copier-answers.yml":
+            has_copier_answers = True
+        elif child.name == "{{ module_name }}":
+            has_module = True
 
-    return has_core and has_dot_vscode and has_readme
-
-
-def _validate_project_name(project_name: str) -> None:
-    if not _PROJECT_NAME_PATTERN.match(project_name):
-        raise Exception(
-            f"invalid project name: {project_name!r} (must contain only letters, numbers, and '_', and cannot begin with a number)"
-        )
+    return has_readme and has_copier_answers and has_module
 
 
 def _optionally_create_and_return(path: pathlib.Path, create: bool) -> pathlib.Path:
@@ -52,8 +41,8 @@ def _optionally_create_and_return(path: pathlib.Path, create: bool) -> pathlib.P
     return path
 
 
-def get_repo_root_path(
-    cwd: Optional[pathlib.Path] = None, create: bool = False
+def get_project_root_path(
+    cwd: Optional[pathlib.Path] = None
 ) -> pathlib.Path:
     start: pathlib.Path
 
@@ -64,68 +53,58 @@ def get_repo_root_path(
 
     result = start
 
-    while not _is_git_repo(result) and result != result.parent:
+    while not _is_git_repo(result) and not _is_copier_ml_project(result) and result != result.parent:
         result = result.parent
 
     if not _is_git_repo(result):
         raise Exception(
-            f"no Git repository found in cwd or parent directories (cwd: {start})"
+            f"no Git repository found in cwd or parent directories (cwd: {start}, searched up to: {result})"
         )
 
-    if not _is_ml_repo(result):
+    if not _is_copier_ml_project(result):
         raise Exception(
-            f'Git repository found in cwd or parent directories does not contain expected children (required: .vscode/, core/, README.md containing "Sophie\'s ML Monorepo", cwd: {start})'
+            f'Git repository found in cwd or parent directories does not contain expected children (required: README.md and .copier-answers.yml", cwd: {start}, searched up to: {result})'
         )
 
-    return _optionally_create_and_return(result, create)
+    return result
 
 
 def get_dir_artifacts_data_raw(
-    project_name: str, cwd: Optional[pathlib.Path] = None, create: bool = False
+    cwd: Optional[pathlib.Path] = None, create: bool = True
 ) -> pathlib.Path:
-    _validate_project_name(project_name)
-
     return _optionally_create_and_return(
-        get_repo_root_path(cwd) / "artifacts" / "data" / project_name / "raw", create
+        get_project_root_path(cwd) / "artifacts" / "data" / "raw", create
     )
 
 
 def get_dir_artifacts_data_intermediate(
-    project_name: str, cwd: Optional[pathlib.Path] = None, create: bool = False
+    cwd: Optional[pathlib.Path] = None, create: bool = True
 ) -> pathlib.Path:
-    _validate_project_name(project_name)
-
     return _optionally_create_and_return(
-        get_repo_root_path(cwd) / "artifacts" / "data" / project_name / "intermediate",
+        get_project_root_path(cwd) / "artifacts" / "data" / "intermediate",
         create,
     )
 
 
 def get_dir_artifacts_data_cache(
-    project_name: str, cwd: Optional[pathlib.Path] = None, create: bool = False
+    cwd: Optional[pathlib.Path] = None, create: bool = True
 ) -> pathlib.Path:
-    _validate_project_name(project_name)
-
     return _optionally_create_and_return(
-        get_repo_root_path(cwd) / "artifacts" / "data" / project_name / "cache", create
+        get_project_root_path(cwd) / "artifacts" / "data" / "cache", create
     )
 
 
 def get_dir_checkpoints(
-    project_name: str, cwd: Optional[pathlib.Path] = None, create: bool = False
+    cwd: Optional[pathlib.Path] = None, create: bool = True
 ) -> pathlib.Path:
-    _validate_project_name(project_name)
-
     return _optionally_create_and_return(
-        get_repo_root_path(cwd) / "artifacts" / "checkpoints" / project_name, create
+        get_project_root_path(cwd) / "artifacts" / "checkpoints", create
     )
 
 
 def get_dir_models(
-    project_name: str, cwd: Optional[pathlib.Path] = None, create: bool = False
+    cwd: Optional[pathlib.Path] = None, create: bool = True
 ) -> pathlib.Path:
-    _validate_project_name(project_name)
-
     return _optionally_create_and_return(
-        get_repo_root_path(cwd) / "artifacts" / "models" / project_name, create
+        get_project_root_path(cwd) / "artifacts" / "models", create
     )

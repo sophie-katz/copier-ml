@@ -29,6 +29,7 @@ import re
 import copier
 import pytest
 from typing import Dict
+import subprocess
 
 from tests.testing_utils import (
     COPIES_DIRECTORY,
@@ -207,7 +208,9 @@ def _create_directory_test_minimal(license: str) -> DirectoryTest:
             ),
         },
         child_directories={
+            ".git": DirectoryTest(ignore_children=True),
             ".venv": DirectoryTest(ignore_children=True),
+            "__pypackages__": DirectoryTest(ignore_children=True, optional=True),
             "language_model": DirectoryTest(
                 child_files={
                     "__init__.py": FileTest(on_text=[_test_file_empty]),
@@ -390,6 +393,10 @@ def _run_copy_test(
     )
 
     directory_test.run(copy_directory)
+
+    result = subprocess.run(["pdm", "run", "pytest"], cwd=copy_directory)
+
+    assert result.returncode == 0
 
 
 minimal_parameters = []

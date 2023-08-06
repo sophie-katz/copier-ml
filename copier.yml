@@ -130,7 +130,7 @@ use_scikit_learn:
 use_comet:
   type: bool
   help: Add comet.ai integration?
-  default: true
+  default: false
 
 use_vscode:
   type: bool
