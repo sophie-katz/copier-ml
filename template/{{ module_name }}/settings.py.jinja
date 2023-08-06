@@ -1,4 +1,7 @@
-{% include('includes/license_blurb_hashes.jinja') %}from pydantic_settings import BaseSettings, SettingsConfigDict
+{% include('includes/license_blurb_hashes.jinja') %}"""Project settings loaded from environment variables."""
+
+
+from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
 class Settings(BaseSettings):

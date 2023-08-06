@@ -1,6 +1,9 @@
-{% include('includes/license_blurb_hashes.jinja') %}import pathlib
-import os
+{% include('includes/license_blurb_hashes.jinja') %}"""Utility functions for dealing with paths within the project."""
+
+
 from typing import Optional
+import os
+import pathlib
 import re
 
 
@@ -42,6 +45,11 @@ def _optionally_create_and_return(path: pathlib.Path, create: bool) -> pathlib.P
 
 
 def get_project_root_path(cwd: Optional[pathlib.Path] = None) -> pathlib.Path:
+    """
+    Get the root path of the project.
+
+    Searches from `cwd` upwards until it finds the project root.
+    """
     start: pathlib.Path
 
     if cwd is None:
@@ -74,6 +82,11 @@ def get_project_root_path(cwd: Optional[pathlib.Path] = None) -> pathlib.Path:
 def get_dir_artifacts_data_raw(
     cwd: Optional[pathlib.Path] = None, create: bool = True
 ) -> pathlib.Path:
+    """
+    Get the path to the raw data artifacts directory.
+
+    This is used as a download cache for unchanged raw data files.
+    """
     return _optionally_create_and_return(
         get_project_root_path(cwd) / "artifacts" / "data" / "raw", create
     )
@@ -82,6 +95,12 @@ def get_dir_artifacts_data_raw(
 def get_dir_artifacts_data_intermediate(
     cwd: Optional[pathlib.Path] = None, create: bool = True
 ) -> pathlib.Path:
+    """
+    Get the path to the intermediate data artifacts directory.
+
+    This is used as a cache for data files that are in some intermediate stage
+    of transformation.
+    """
     return _optionally_create_and_return(
         get_project_root_path(cwd) / "artifacts" / "data" / "intermediate",
         create,
@@ -91,6 +110,11 @@ def get_dir_artifacts_data_intermediate(
 def get_dir_artifacts_data_cache(
     cwd: Optional[pathlib.Path] = None, create: bool = True
 ) -> pathlib.Path:
+    """
+    Get the path to the cache data artifacts directory.
+
+    This is used as a cache for fully processed data files in their final form.
+    """
     return _optionally_create_and_return(
         get_project_root_path(cwd) / "artifacts" / "data" / "cache", create
     )
@@ -99,14 +123,37 @@ def get_dir_artifacts_data_cache(
 def get_dir_checkpoints(
     cwd: Optional[pathlib.Path] = None, create: bool = True
 ) -> pathlib.Path:
+    """
+    Get the path to the checkpoint artifacts directory.
+
+    This is used to store training checkpoints.
+    """
     return _optionally_create_and_return(
         get_project_root_path(cwd) / "artifacts" / "checkpoints", create
+    )
+
+
+def get_dir_logs(
+    cwd: Optional[pathlib.Path] = None, create: bool = True
+) -> pathlib.Path:
+    """
+    Get the path to the log artifacts directory.
+
+    This is used to store training logs.
+    """
+    return _optionally_create_and_return(
+        get_project_root_path(cwd) / "artifacts" / "logs", create
     )
 
 
 def get_dir_models(
     cwd: Optional[pathlib.Path] = None, create: bool = True
 ) -> pathlib.Path:
+    """
+    Get the path to the model artifacts directory.
+
+    This is used to store saved models.
+    """
     return _optionally_create_and_return(
         get_project_root_path(cwd) / "artifacts" / "models", create
     )

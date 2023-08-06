@@ -1,13 +1,20 @@
-{% include('includes/license_blurb_hashes.jinja') %}from .project_paths import *
+{% include('includes/license_blurb_hashes.jinja') %}"""Unit tests."""
+
+
 import pathlib
+
 import pytest
+
+from .project_paths import *
 
 
 def test_get_project_root_path_good() -> None:
+    """Test detecting a normal project root path."""
     result = get_project_root_path()
     assert (result / "{{ module_name }}").is_dir()
 
 
 def test_get_project_root_path_bad() -> None:
+    """Test being unable to detect a normal project root path."""
     with pytest.raises(Exception):
         get_project_root_path(pathlib.Path.home())

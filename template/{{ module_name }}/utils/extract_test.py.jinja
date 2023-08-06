@@ -1,10 +1,15 @@
-{% include('includes/license_blurb_hashes.jinja') %}import os
+{% include('includes/license_blurb_hashes.jinja') %}"""Unit tests."""
+
+
+import os
+
+from . import download
 from . import extract
 from . import project_paths
-from . import download
 
 
 def test_extract_archive() -> None:
+    """Test extracting a simple archive."""
     url = "https://download.pytorch.org/tutorial/data.zip"
     download_dir = project_paths.get_dir_artifacts_data_raw()
     archive_path = download_dir / "data.zip"
