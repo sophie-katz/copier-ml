@@ -25,6 +25,7 @@ Then tests rendered files against expected results.
 
 import os
 import re
+import sys
 
 import copier
 import pytest
@@ -423,6 +424,7 @@ def _run_copy_test(
         copy_directory,
         data=data,
         unsafe=True,
+        cleanup_on_error=False,
     )
 
     directory_test.run(copy_directory)
@@ -443,8 +445,11 @@ for python_version in ["3-8", "3-9", "3-10", "3-11"]:
 
 
 for python_version in ["3-8", "3-9", "3-10", "3-11"]:
-    for cuda_version in ["cpu", "cuda-11-7", "cuda-11-8"]:
-        maximal_parameters.append((python_version, cuda_version))
+    if sys.platform == "darwin":
+        maximal_parameters.append((python_version, "cpu"))
+    else:
+        for cuda_version in ["cpu", "cuda-11-7", "cuda-11-8"]:
+            maximal_parameters.append((python_version, cuda_version))
 
 
 @pytest.mark.parametrize("license,python_version", minimal_parameters)
