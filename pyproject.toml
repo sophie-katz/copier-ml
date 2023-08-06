@@ -3,7 +3,7 @@ name = "copier-ml"
 version = "0.1.0"
 description = ""
 authors = [{ name = "Sophie Katz", email = "sophie@sophiekatz.us" }]
-dependencies = ["jinja2-time>=0.2.0", "copier>=8.1.0"]
+dependencies = ["copier>=8.1.0", "jinja2-time>=0.2.0"]
 requires-python = ">=3.8,<3.12"
 readme = "README.md"
 license = { text = "MIT" }
@@ -13,16 +13,16 @@ exclude = ["copies", "includes", "scripts", "template", "tests"]
 
 [tool.pdm.dev-dependencies]
 dev = [
-    "pyarrow>=12.0.1",
-    "pylance>=0.5.10",
-    "pytest>=7.4.0",
-    "pycodestyle>=2.11.0",
-    "mypy>=1.4.1",
     "bandit>=1.7.5",
-    "pydocstyle>=6.3.0",
-    "vulture>=2.7",
-    "isort>=5.12.0",
     "black>=23.7.0",
-    "pytest-xdist>=3.3.1",
+    "isort>=5.12.0",
+    "mypy>=1.4.1",
     "pdm>=2.8.2",
+    "pyarrow>=12.0.1",
+    "pycodestyle>=2.11.0",
+    "pydocstyle>=6.3.0",
+    "pylance>=0.6.0",
+    "pytest-xdist>=3.3.1",
+    "pytest>=7.4.0",
+    "vulture>=2.7",
 ]

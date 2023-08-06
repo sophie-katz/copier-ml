@@ -368,20 +368,6 @@ def _create_directory_test_minimal(license: str) -> DirectoryTest:
                     ),
                 }
             ),
-            "scripts": DirectoryTest(
-                child_files={
-                    "check_pdm_lock.py": FileTest(
-                        on_path=[
-                            _test_file_formatting_black,
-                        ]
-                    ),
-                    "use_pdm_lock.py": FileTest(
-                        on_path=[
-                            _test_file_formatting_black,
-                        ]
-                    ),
-                }
-            ),
         },
     )
 
@@ -398,6 +384,21 @@ def _create_directory_test_maximal(license: str, cuda_version: str) -> Directory
         child_files={
             "settings.json": FileTest(),
             "extensions.json": FileTest(),
+        }
+    )
+
+    minimal.child_directories["scripts"] = DirectoryTest(
+        child_files={
+            "check_pdm_lock.py": FileTest(
+                on_path=[
+                    _test_file_formatting_black,
+                ]
+            ),
+            "use_pdm_lock.py": FileTest(
+                on_path=[
+                    _test_file_formatting_black,
+                ]
+            ),
         }
     )
 
