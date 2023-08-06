@@ -25,8 +25,7 @@ import subprocess
 import sys
 from typing import List, Dict
 
-PYTHON_VERSION_PATTERN = re.compile(r"^3\.\d+$")
-
+PYTHON_VERSION_CHOICES = ["3-8", "3-9", "3-10", "3-11"]
 CUDA_VERSION_CHOICES = ["not_applicable", "cpu", "cuda-11-7", "cuda-11-8"]
 
 
@@ -38,14 +37,15 @@ def create_argument_parser() -> argparse.ArgumentParser:
     parser.add_argument(
         "--python-version",
         type=str,
-        help="The Python version to use (example: 3.11)",
+        help="The Python version to use (example: 3-11)",
+        choices=PYTHON_VERSION_CHOICES,
     )
 
     parser.add_argument(
         "--cuda-version",
         type=str,
         help="The CUDA version to use (not_applicable means that no dependencies use CUDA)",
-        choices=["not_applicable", "cpu", "cuda-11-7", "cuda-11-8"],
+        choices=CUDA_VERSION_CHOICES,
     )
 
     return parser
@@ -54,18 +54,16 @@ def create_argument_parser() -> argparse.ArgumentParser:
 def get_arguments() -> argparse.Namespace:
     argument_parser = create_argument_parser()
 
-    try:
-        argument_namespace = argument_parser.parse_args()
-    except argparse.ArgumentError as e:
-        print(f"error: {e}")
-        sys.exit(1)
+    argument_namespace = argument_parser.parse_args()
 
     if argument_namespace.python_version is None:
         print("error: required argument --python-version missing")
         sys.exit(1)
 
-    if PYTHON_VERSION_PATTERN.match(str(argument_namespace.python_version)) is None:
-        print(f"error: --python-version must match {PYTHON_VERSION_PATTERN.pattern}")
+    if argument_namespace.python_version not in PYTHON_VERSION_CHOICES:
+        print(
+            f"error: required argument --python-version must be one of: {PYTHON_VERSION_CHOICES}"
+        )
         sys.exit(1)
 
     if argument_namespace.cuda_version is None:
@@ -180,7 +178,9 @@ if __name__ == "__main__":
     if venv_exists(copy_directory):
         print(f"info: {copy_directory} already has a venv")
     else:
-        create_venv(pdm_path, copy_directory, arguments.python_version)
+        create_venv(
+            pdm_path, copy_directory, str(arguments.python_version).replace("-", ".")
+        )
 
     pdm_lock(pdm_path, arguments.cuda_version)
 

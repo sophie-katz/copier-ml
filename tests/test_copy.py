@@ -62,7 +62,7 @@ def _create_data_minimal(license: str, python_version: str) -> Dict[str, str]:
     base["use_pytorch"] = "false"
     base["use_tensorflow"] = "false"
     base["use_scikit_learn"] = "false"
-    base["use_comet_ai"] = "false"
+    base["use_comet"] = "false"
     base["use_vscode"] = "false"
 
     return base
@@ -76,7 +76,7 @@ def _create_data_maximal(
     base["use_pytorch"] = "true"
     base["use_tensorflow"] = "true"
     base["use_scikit_learn"] = "true"
-    base["use_comet_ai"] = "true"
+    base["use_comet"] = "true"
     base["use_vscode"] = "true"
 
     return base
@@ -145,6 +145,13 @@ def _test_pyproject_toml(text: str) -> None:
     assert PYPROJECT_PATTERN_BAD_SPACING.search(text) is None
 
 
+PYTHON_VERSION_WITH_DASH_PATTERN = re.compile(r"3-[0-9]+")
+
+
+def _test_file_python_version_with_dot(text: str) -> None:
+    assert PYTHON_VERSION_WITH_DASH_PATTERN.search(text) is None
+
+
 def _create_directory_test_minimal(license: str) -> DirectoryTest:
     result = DirectoryTest(
         child_files={
@@ -158,6 +165,7 @@ def _create_directory_test_minimal(license: str) -> DirectoryTest:
                     lambda text: _test_file_two_newlines_after_license_hashes(
                         license != "none", text
                     ),
+                    _test_file_python_version_with_dot,
                 ]
             ),
             ".gitignore": FileTest(
@@ -169,6 +177,7 @@ def _create_directory_test_minimal(license: str) -> DirectoryTest:
                     lambda text: _test_file_two_newlines_after_license_hashes(
                         license != "none", text
                     ),
+                    _test_file_python_version_with_dot,
                 ]
             ),
             ".pdm-python": FileTest(),
@@ -183,6 +192,7 @@ def _create_directory_test_minimal(license: str) -> DirectoryTest:
                         license != "none", text
                     ),
                     _test_pyproject_toml,
+                    _test_file_python_version_with_dot,
                 ]
             ),
             "README.md": FileTest(
@@ -192,6 +202,7 @@ def _create_directory_test_minimal(license: str) -> DirectoryTest:
                     ),
                     lambda text: _test_file_license_content(license, text),
                     lambda text: _test_readme_licened(license != "none", text),
+                    _test_file_python_version_with_dot,
                 ]
             ),
         },
@@ -209,6 +220,7 @@ def _create_directory_test_minimal(license: str) -> DirectoryTest:
                             lambda text: _test_file_two_newlines_after_license_hashes(
                                 license != "none", text
                             ),
+                            _test_file_python_version_with_dot,
                         ]
                     ),
                 },
@@ -226,6 +238,7 @@ def _create_directory_test_minimal(license: str) -> DirectoryTest:
                                     lambda text: _test_file_two_newlines_after_license_hashes(
                                         license != "none", text
                                     ),
+                                    _test_file_python_version_with_dot,
                                 ]
                             ),
                             "download.py": FileTest(
@@ -239,6 +252,7 @@ def _create_directory_test_minimal(license: str) -> DirectoryTest:
                                     lambda text: _test_file_two_newlines_after_license_hashes(
                                         license != "none", text
                                     ),
+                                    _test_file_python_version_with_dot,
                                 ]
                             ),
                             "extract_test.py": FileTest(
@@ -252,6 +266,7 @@ def _create_directory_test_minimal(license: str) -> DirectoryTest:
                                     lambda text: _test_file_two_newlines_after_license_hashes(
                                         license != "none", text
                                     ),
+                                    _test_file_python_version_with_dot,
                                 ]
                             ),
                             "extract.py": FileTest(
@@ -265,6 +280,7 @@ def _create_directory_test_minimal(license: str) -> DirectoryTest:
                                     lambda text: _test_file_two_newlines_after_license_hashes(
                                         license != "none", text
                                     ),
+                                    _test_file_python_version_with_dot,
                                 ]
                             ),
                             "project_paths_test.py": FileTest(
@@ -278,6 +294,7 @@ def _create_directory_test_minimal(license: str) -> DirectoryTest:
                                     lambda text: _test_file_two_newlines_after_license_hashes(
                                         license != "none", text
                                     ),
+                                    _test_file_python_version_with_dot,
                                 ]
                             ),
                             "project_paths.py": FileTest(
@@ -291,6 +308,7 @@ def _create_directory_test_minimal(license: str) -> DirectoryTest:
                                     lambda text: _test_file_two_newlines_after_license_hashes(
                                         license != "none", text
                                     ),
+                                    _test_file_python_version_with_dot,
                                 ]
                             ),
                             "__init__.py": FileTest(on_text=[_test_file_empty]),
@@ -305,12 +323,20 @@ def _create_directory_test_minimal(license: str) -> DirectoryTest:
                 child_directories={
                     "experiments": DirectoryTest(
                         child_files={
-                            "example_experiment.ipynb": FileTest(),
+                            "example_experiment.ipynb": FileTest(
+                                on_text=[
+                                    _test_file_python_version_with_dot,
+                                ]
+                            ),
                         }
                     ),
                     "tutorials": DirectoryTest(
                         child_files={
-                            "example_tutorial.ipynb": FileTest(),
+                            "example_tutorial.ipynb": FileTest(
+                                on_text=[
+                                    _test_file_python_version_with_dot,
+                                ]
+                            ),
                         }
                     ),
                 }
@@ -370,13 +396,13 @@ minimal_parameters = []
 maximal_parameters = []
 
 for license in ["mit", "lgpl30"]:
-    minimal_parameters.append((license, "3.11"))
+    minimal_parameters.append((license, "3-11"))
 
-for python_version in ["3.8", "3.9", "3.10", "3.11"]:
+for python_version in ["3-8", "3-9", "3-10", "3-11"]:
     minimal_parameters.append(("none", python_version))
 
 
-for python_version in ["3.8", "3.9", "3.10", "3.11"]:
+for python_version in ["3-8", "3-9", "3-10", "3-11"]:
     for cuda_version in ["cpu", "cuda-11-7", "cuda-11-8"]:
         maximal_parameters.append((python_version, cuda_version))
 

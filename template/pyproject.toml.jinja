@@ -10,10 +10,10 @@ dependencies = [{% if use_pytorch %}
     "tensorflow-datasets",
     "tensorflow-hub",
     "keras-tuner",{% endif %}{% if use_scikit_learn %}
-    "scikit-learn",{% endif %}{% if use_comet_ai %}
-    "comet-ml",{% endif %}{% if use_pytorch or use_tensorflow or use_scikit_learn or use_comet_ai %}
+    "scikit-learn",{% endif %}{% if use_comet %}
+    "comet-ml",{% endif %}{% if use_pytorch or use_tensorflow or use_scikit_learn or use_comet %}
 {% endif %}]
-requires-python = ">={{ python_version }},<3.{{ (python_version.split('.')[1] | int) + 1 }}"
+requires-python = ">={{ python_version | replace('-', '.') }},<3.{{ (python_version.split('-')[1] | int) + 1 }}"
 readme = "README.md"
 
 [tool.setuptools]
@@ -49,63 +49,63 @@ cpu = [
     "torchaudio==2.0.2 ; sys_platform == 'win32'",
     "torch==2.0.1 ; sys_platform == 'darwin'",
     "torchvision==0.15.2 ; sys_platform == 'darwin'",
-    "torchaudio==2.0.2 ; sys_platform == 'darwin'",{% if python_version == "3.8" %}
-    "torch @ https://download.pytorch.org/whl/cpu/torch-2.0.1%2Bcpu-cp38-cp38-linux_x86_64.whl ; sys_platform == 'linux'",{% endif %}{% if python_version == "3.9" %}
-    "torch @ https://download.pytorch.org/whl/cpu/torch-2.0.1%2Bcpu-cp39-cp39-linux_x86_64.whl ; sys_platform == 'linux'",{% endif %}{% if python_version == "3.10" %}
-    "torch @ https://download.pytorch.org/whl/cpu/torch-2.0.1%2Bcpu-cp310-cp310-linux_x86_64.whl ; sys_platform == 'linux'",{% endif %}{% if python_version == "3.11" %}
-    "torch @ https://download.pytorch.org/whl/cpu/torch-2.0.1%2Bcpu-cp311-cp311-linux_x86_64.whl ; sys_platform == 'linux'",{% endif %}{% if python_version == "3.8" %}
-    "torchvision @ https://download.pytorch.org/whl/cpu/torchvision-0.15.2%2Bcpu-cp38-cp38-linux_x86_64.whl ; sys_platform == 'linux'",{% endif %}{% if python_version == "3.9" %}
-    "torchvision @ https://download.pytorch.org/whl/cpu/torchvision-0.15.2%2Bcpu-cp39-cp39-linux_x86_64.whl ; sys_platform == 'linux'",{% endif %}{% if python_version == "3.10" %}
-    "torchvision @ https://download.pytorch.org/whl/cpu/torchvision-0.15.2%2Bcpu-cp310-cp310-linux_x86_64.whl ; sys_platform == 'linux'",{% endif %}{% if python_version == "3.11" %}
-    "torchvision @ https://download.pytorch.org/whl/cpu/torchvision-0.15.2%2Bcpu-cp311-cp311-linux_x86_64.whl ; sys_platform == 'linux'",{% endif %}{% if python_version == "3.8" %}
-    "torchaudio @ https://download.pytorch.org/whl/cpu/torchaudio-2.0.2%2Bcpu-cp38-cp38-linux_x86_64.whl ; sys_platform == 'linux'",{% endif %}{% if python_version == "3.9" %}
-    "torchaudio @ https://download.pytorch.org/whl/cpu/torchaudio-2.0.2%2Bcpu-cp39-cp39-linux_x86_64.whl ; sys_platform == 'linux'",{% endif %}{% if python_version == "3.10" %}
-    "torchaudio @ https://download.pytorch.org/whl/cpu/torchaudio-2.0.2%2Bcpu-cp310-cp310-linux_x86_64.whl ; sys_platform == 'linux'",{% endif %}{% if python_version == "3.11" %}
+    "torchaudio==2.0.2 ; sys_platform == 'darwin'",{% if python_version == "3-8" %}
+    "torch @ https://download.pytorch.org/whl/cpu/torch-2.0.1%2Bcpu-cp38-cp38-linux_x86_64.whl ; sys_platform == 'linux'",{% endif %}{% if python_version == "3-9" %}
+    "torch @ https://download.pytorch.org/whl/cpu/torch-2.0.1%2Bcpu-cp39-cp39-linux_x86_64.whl ; sys_platform == 'linux'",{% endif %}{% if python_version == "3-10" %}
+    "torch @ https://download.pytorch.org/whl/cpu/torch-2.0.1%2Bcpu-cp310-cp310-linux_x86_64.whl ; sys_platform == 'linux'",{% endif %}{% if python_version == "3-11" %}
+    "torch @ https://download.pytorch.org/whl/cpu/torch-2.0.1%2Bcpu-cp311-cp311-linux_x86_64.whl ; sys_platform == 'linux'",{% endif %}{% if python_version == "3-8" %}
+    "torchvision @ https://download.pytorch.org/whl/cpu/torchvision-0.15.2%2Bcpu-cp38-cp38-linux_x86_64.whl ; sys_platform == 'linux'",{% endif %}{% if python_version == "3-9" %}
+    "torchvision @ https://download.pytorch.org/whl/cpu/torchvision-0.15.2%2Bcpu-cp39-cp39-linux_x86_64.whl ; sys_platform == 'linux'",{% endif %}{% if python_version == "3-10" %}
+    "torchvision @ https://download.pytorch.org/whl/cpu/torchvision-0.15.2%2Bcpu-cp310-cp310-linux_x86_64.whl ; sys_platform == 'linux'",{% endif %}{% if python_version == "3-11" %}
+    "torchvision @ https://download.pytorch.org/whl/cpu/torchvision-0.15.2%2Bcpu-cp311-cp311-linux_x86_64.whl ; sys_platform == 'linux'",{% endif %}{% if python_version == "3-8" %}
+    "torchaudio @ https://download.pytorch.org/whl/cpu/torchaudio-2.0.2%2Bcpu-cp38-cp38-linux_x86_64.whl ; sys_platform == 'linux'",{% endif %}{% if python_version == "3-9" %}
+    "torchaudio @ https://download.pytorch.org/whl/cpu/torchaudio-2.0.2%2Bcpu-cp39-cp39-linux_x86_64.whl ; sys_platform == 'linux'",{% endif %}{% if python_version == "3-10" %}
+    "torchaudio @ https://download.pytorch.org/whl/cpu/torchaudio-2.0.2%2Bcpu-cp310-cp310-linux_x86_64.whl ; sys_platform == 'linux'",{% endif %}{% if python_version == "3-11" %}
     "torchaudio @ https://download.pytorch.org/whl/cpu/torchaudio-2.0.2%2Bcpu-cp311-cp311-linux_x86_64.whl ; sys_platform == 'linux'",{% endif %}
 ]
 
-cuda-11-7 = [{% if python_version == "3.8" %}
-    "torch @ https://download.pytorch.org/whl/cu117/torch-2.0.1%2Bcu117-cp38-cp38-win_amd64.whl ; sys_platform == 'win32'",{% endif %}{% if python_version == "3.9" %}
-    "torch @ https://download.pytorch.org/whl/cu117/torch-2.0.1%2Bcu117-cp39-cp39-win_amd64.whl ; sys_platform == 'win32'",{% endif %}{% if python_version == "3.10" %}
-    "torch @ https://download.pytorch.org/whl/cu117/torch-2.0.1%2Bcu117-cp310-cp310-win_amd64.whl ; sys_platform == 'win32'",{% endif %}{% if python_version == "3.11" %}
-    "torch @ https://download.pytorch.org/whl/cu117/torch-2.0.1%2Bcu117-cp311-cp311-win_amd64.whl ; sys_platform == 'win32'",{% endif %}{% if python_version == "3.8" %}
-    "torchvision @ https://download.pytorch.org/whl/cu117/torchvision-0.15.2%2Bcu117-cp38-cp38-win_amd64.whl ; sys_platform == 'win32'",{% endif %}{% if python_version == "3.9" %}
-    "torchvision @ https://download.pytorch.org/whl/cu117/torchvision-0.15.2%2Bcu117-cp39-cp39-win_amd64.whl ; sys_platform == 'win32'",{% endif %}{% if python_version == "3.10" %}
-    "torchvision @ https://download.pytorch.org/whl/cu117/torchvision-0.15.2%2Bcu117-cp310-cp310-win_amd64.whl ; sys_platform == 'win32'",{% endif %}{% if python_version == "3.11" %}
-    "torchvision @ https://download.pytorch.org/whl/cu117/torchvision-0.15.2%2Bcu117-cp311-cp311-win_amd64.whl ; sys_platform == 'win32'",{% endif %}{% if python_version == "3.8" %}
-    "torchaudio @ https://download.pytorch.org/whl/cu117/torchaudio-2.0.2%2Bcu117-cp38-cp38-win_amd64.whl ; sys_platform == 'win32'",{% endif %}{% if python_version == "3.9" %}
-    "torchaudio @ https://download.pytorch.org/whl/cu117/torchaudio-2.0.2%2Bcu117-cp39-cp39-win_amd64.whl ; sys_platform == 'win32'",{% endif %}{% if python_version == "3.10" %}
-    "torchaudio @ https://download.pytorch.org/whl/cu117/torchaudio-2.0.2%2Bcu117-cp310-cp310-win_amd64.whl ; sys_platform == 'win32'",{% endif %}{% if python_version == "3.11" %}
+cuda-11-7 = [{% if python_version == "3-8" %}
+    "torch @ https://download.pytorch.org/whl/cu117/torch-2.0.1%2Bcu117-cp38-cp38-win_amd64.whl ; sys_platform == 'win32'",{% endif %}{% if python_version == "3-9" %}
+    "torch @ https://download.pytorch.org/whl/cu117/torch-2.0.1%2Bcu117-cp39-cp39-win_amd64.whl ; sys_platform == 'win32'",{% endif %}{% if python_version == "3-10" %}
+    "torch @ https://download.pytorch.org/whl/cu117/torch-2.0.1%2Bcu117-cp310-cp310-win_amd64.whl ; sys_platform == 'win32'",{% endif %}{% if python_version == "3-11" %}
+    "torch @ https://download.pytorch.org/whl/cu117/torch-2.0.1%2Bcu117-cp311-cp311-win_amd64.whl ; sys_platform == 'win32'",{% endif %}{% if python_version == "3-8" %}
+    "torchvision @ https://download.pytorch.org/whl/cu117/torchvision-0.15.2%2Bcu117-cp38-cp38-win_amd64.whl ; sys_platform == 'win32'",{% endif %}{% if python_version == "3-9" %}
+    "torchvision @ https://download.pytorch.org/whl/cu117/torchvision-0.15.2%2Bcu117-cp39-cp39-win_amd64.whl ; sys_platform == 'win32'",{% endif %}{% if python_version == "3-10" %}
+    "torchvision @ https://download.pytorch.org/whl/cu117/torchvision-0.15.2%2Bcu117-cp310-cp310-win_amd64.whl ; sys_platform == 'win32'",{% endif %}{% if python_version == "3-11" %}
+    "torchvision @ https://download.pytorch.org/whl/cu117/torchvision-0.15.2%2Bcu117-cp311-cp311-win_amd64.whl ; sys_platform == 'win32'",{% endif %}{% if python_version == "3-8" %}
+    "torchaudio @ https://download.pytorch.org/whl/cu117/torchaudio-2.0.2%2Bcu117-cp38-cp38-win_amd64.whl ; sys_platform == 'win32'",{% endif %}{% if python_version == "3-9" %}
+    "torchaudio @ https://download.pytorch.org/whl/cu117/torchaudio-2.0.2%2Bcu117-cp39-cp39-win_amd64.whl ; sys_platform == 'win32'",{% endif %}{% if python_version == "3-10" %}
+    "torchaudio @ https://download.pytorch.org/whl/cu117/torchaudio-2.0.2%2Bcu117-cp310-cp310-win_amd64.whl ; sys_platform == 'win32'",{% endif %}{% if python_version == "3-11" %}
     "torchaudio @ https://download.pytorch.org/whl/cu117/torchaudio-2.0.2%2Bcu117-cp311-cp311-win_amd64.whl ; sys_platform == 'win32'",{% endif %}
     "torch==2.0.1 ; sys_platform == 'linux'",
     "torchvision==0.15.2 ; sys_platform == 'linux'",
     "torchaudio==2.0.2 ; sys_platform == 'linux'",
 ]
 
-cuda-11-8 = [{% if python_version == "3.8" %}
-    "torch @ https://download.pytorch.org/whl/cu118/torch-2.0.1%2Bcu118-cp38-cp38-win_amd64.whl ; sys_platform == 'win32'",{% endif %}{% if python_version == "3.9" %}
-    "torch @ https://download.pytorch.org/whl/cu118/torch-2.0.1%2Bcu118-cp39-cp39-win_amd64.whl ; sys_platform == 'win32'",{% endif %}{% if python_version == "3.10" %}
-    "torch @ https://download.pytorch.org/whl/cu118/torch-2.0.1%2Bcu118-cp310-cp310-win_amd64.whl ; sys_platform == 'win32'",{% endif %}{% if python_version == "3.11" %}
-    "torch @ https://download.pytorch.org/whl/cu118/torch-2.0.1%2Bcu118-cp311-cp311-win_amd64.whl ; sys_platform == 'win32'",{% endif %}{% if python_version == "3.8" %}
-    "torchvision @ https://download.pytorch.org/whl/cu118/torchvision-0.15.2%2Bcu118-cp38-cp38-win_amd64.whl ; sys_platform == 'win32'",{% endif %}{% if python_version == "3.9" %}
-    "torchvision @ https://download.pytorch.org/whl/cu118/torchvision-0.15.2%2Bcu118-cp39-cp39-win_amd64.whl ; sys_platform == 'win32'",{% endif %}{% if python_version == "3.10" %}
-    "torchvision @ https://download.pytorch.org/whl/cu118/torchvision-0.15.2%2Bcu118-cp310-cp310-win_amd64.whl ; sys_platform == 'win32'",{% endif %}{% if python_version == "3.11" %}
-    "torchvision @ https://download.pytorch.org/whl/cu118/torchvision-0.15.2%2Bcu118-cp311-cp311-win_amd64.whl ; sys_platform == 'win32'",{% endif %}{% if python_version == "3.8" %}
-    "torchaudio @ https://download.pytorch.org/whl/cu118/torchaudio-2.0.2%2Bcu118-cp38-cp38-win_amd64.whl ; sys_platform == 'win32'",{% endif %}{% if python_version == "3.9" %}
-    "torchaudio @ https://download.pytorch.org/whl/cu118/torchaudio-2.0.2%2Bcu118-cp39-cp39-win_amd64.whl ; sys_platform == 'win32'",{% endif %}{% if python_version == "3.10" %}
-    "torchaudio @ https://download.pytorch.org/whl/cu118/torchaudio-2.0.2%2Bcu118-cp310-cp310-win_amd64.whl ; sys_platform == 'win32'",{% endif %}{% if python_version == "3.11" %}
-    "torchaudio @ https://download.pytorch.org/whl/cu118/torchaudio-2.0.2%2Bcu118-cp311-cp311-win_amd64.whl ; sys_platform == 'win32'",{% endif %}{% if python_version == "3.8" %}
-    "torch @ https://download.pytorch.org/whl/cu118/torch-2.0.1%2Bcu118-cp38-cp38-linux_x86_64.whl ; sys_platform == 'linux'",{% endif %}{% if python_version == "3.9" %}
-    "torch @ https://download.pytorch.org/whl/cu118/torch-2.0.1%2Bcu118-cp39-cp39-linux_x86_64.whl ; sys_platform == 'linux'",{% endif %}{% if python_version == "3.10" %}
-    "torch @ https://download.pytorch.org/whl/cu118/torch-2.0.1%2Bcu118-cp310-cp310-linux_x86_64.whl ; sys_platform == 'linux'",{% endif %}{% if python_version == "3.11" %}
-    "torch @ https://download.pytorch.org/whl/cu118/torch-2.0.1%2Bcu118-cp311-cp311-linux_x86_64.whl ; sys_platform == 'linux'",{% endif %}{% if python_version == "3.8" %}
-    "torchvision @ https://download.pytorch.org/whl/cu118/torchvision-0.15.2%2Bcu118-cp38-cp38-linux_x86_64.whl ; sys_platform == 'linux'",{% endif %}{% if python_version == "3.9" %}
-    "torchvision @ https://download.pytorch.org/whl/cu118/torchvision-0.15.2%2Bcu118-cp39-cp39-linux_x86_64.whl ; sys_platform == 'linux'",{% endif %}{% if python_version == "3.10" %}
-    "torchvision @ https://download.pytorch.org/whl/cu118/torchvision-0.15.2%2Bcu118-cp310-cp310-linux_x86_64.whl ; sys_platform == 'linux'",{% endif %}{% if python_version == "3.11" %}
-    "torchvision @ https://download.pytorch.org/whl/cu118/torchvision-0.15.2%2Bcu118-cp311-cp311-linux_x86_64.whl ; sys_platform == 'linux'",{% endif %}{% if python_version == "3.8" %}
-    "torchaudio @ https://download.pytorch.org/whl/cu118/torchaudio-2.0.2%2Bcu118-cp38-cp38-linux_x86_64.whl ; sys_platform == 'linux'",{% endif %}{% if python_version == "3.9" %}
-    "torchaudio @ https://download.pytorch.org/whl/cu118/torchaudio-2.0.2%2Bcu118-cp39-cp39-linux_x86_64.whl ; sys_platform == 'linux'",{% endif %}{% if python_version == "3.10" %}
-    "torchaudio @ https://download.pytorch.org/whl/cu118/torchaudio-2.0.2%2Bcu118-cp310-cp310-linux_x86_64.whl ; sys_platform == 'linux'",{% endif %}{% if python_version == "3.11" %}
+cuda-11-8 = [{% if python_version == "3-8" %}
+    "torch @ https://download.pytorch.org/whl/cu118/torch-2.0.1%2Bcu118-cp38-cp38-win_amd64.whl ; sys_platform == 'win32'",{% endif %}{% if python_version == "3-9" %}
+    "torch @ https://download.pytorch.org/whl/cu118/torch-2.0.1%2Bcu118-cp39-cp39-win_amd64.whl ; sys_platform == 'win32'",{% endif %}{% if python_version == "3-10" %}
+    "torch @ https://download.pytorch.org/whl/cu118/torch-2.0.1%2Bcu118-cp310-cp310-win_amd64.whl ; sys_platform == 'win32'",{% endif %}{% if python_version == "3-11" %}
+    "torch @ https://download.pytorch.org/whl/cu118/torch-2.0.1%2Bcu118-cp311-cp311-win_amd64.whl ; sys_platform == 'win32'",{% endif %}{% if python_version == "3-8" %}
+    "torchvision @ https://download.pytorch.org/whl/cu118/torchvision-0.15.2%2Bcu118-cp38-cp38-win_amd64.whl ; sys_platform == 'win32'",{% endif %}{% if python_version == "3-9" %}
+    "torchvision @ https://download.pytorch.org/whl/cu118/torchvision-0.15.2%2Bcu118-cp39-cp39-win_amd64.whl ; sys_platform == 'win32'",{% endif %}{% if python_version == "3-10" %}
+    "torchvision @ https://download.pytorch.org/whl/cu118/torchvision-0.15.2%2Bcu118-cp310-cp310-win_amd64.whl ; sys_platform == 'win32'",{% endif %}{% if python_version == "3-11" %}
+    "torchvision @ https://download.pytorch.org/whl/cu118/torchvision-0.15.2%2Bcu118-cp311-cp311-win_amd64.whl ; sys_platform == 'win32'",{% endif %}{% if python_version == "3-8" %}
+    "torchaudio @ https://download.pytorch.org/whl/cu118/torchaudio-2.0.2%2Bcu118-cp38-cp38-win_amd64.whl ; sys_platform == 'win32'",{% endif %}{% if python_version == "3-9" %}
+    "torchaudio @ https://download.pytorch.org/whl/cu118/torchaudio-2.0.2%2Bcu118-cp39-cp39-win_amd64.whl ; sys_platform == 'win32'",{% endif %}{% if python_version == "3-10" %}
+    "torchaudio @ https://download.pytorch.org/whl/cu118/torchaudio-2.0.2%2Bcu118-cp310-cp310-win_amd64.whl ; sys_platform == 'win32'",{% endif %}{% if python_version == "3-11" %}
+    "torchaudio @ https://download.pytorch.org/whl/cu118/torchaudio-2.0.2%2Bcu118-cp311-cp311-win_amd64.whl ; sys_platform == 'win32'",{% endif %}{% if python_version == "3-8" %}
+    "torch @ https://download.pytorch.org/whl/cu118/torch-2.0.1%2Bcu118-cp38-cp38-linux_x86_64.whl ; sys_platform == 'linux'",{% endif %}{% if python_version == "3-9" %}
+    "torch @ https://download.pytorch.org/whl/cu118/torch-2.0.1%2Bcu118-cp39-cp39-linux_x86_64.whl ; sys_platform == 'linux'",{% endif %}{% if python_version == "3-10" %}
+    "torch @ https://download.pytorch.org/whl/cu118/torch-2.0.1%2Bcu118-cp310-cp310-linux_x86_64.whl ; sys_platform == 'linux'",{% endif %}{% if python_version == "3-11" %}
+    "torch @ https://download.pytorch.org/whl/cu118/torch-2.0.1%2Bcu118-cp311-cp311-linux_x86_64.whl ; sys_platform == 'linux'",{% endif %}{% if python_version == "3-8" %}
+    "torchvision @ https://download.pytorch.org/whl/cu118/torchvision-0.15.2%2Bcu118-cp38-cp38-linux_x86_64.whl ; sys_platform == 'linux'",{% endif %}{% if python_version == "3-9" %}
+    "torchvision @ https://download.pytorch.org/whl/cu118/torchvision-0.15.2%2Bcu118-cp39-cp39-linux_x86_64.whl ; sys_platform == 'linux'",{% endif %}{% if python_version == "3-10" %}
+    "torchvision @ https://download.pytorch.org/whl/cu118/torchvision-0.15.2%2Bcu118-cp310-cp310-linux_x86_64.whl ; sys_platform == 'linux'",{% endif %}{% if python_version == "3-11" %}
+    "torchvision @ https://download.pytorch.org/whl/cu118/torchvision-0.15.2%2Bcu118-cp311-cp311-linux_x86_64.whl ; sys_platform == 'linux'",{% endif %}{% if python_version == "3-8" %}
+    "torchaudio @ https://download.pytorch.org/whl/cu118/torchaudio-2.0.2%2Bcu118-cp38-cp38-linux_x86_64.whl ; sys_platform == 'linux'",{% endif %}{% if python_version == "3-9" %}
+    "torchaudio @ https://download.pytorch.org/whl/cu118/torchaudio-2.0.2%2Bcu118-cp39-cp39-linux_x86_64.whl ; sys_platform == 'linux'",{% endif %}{% if python_version == "3-10" %}
+    "torchaudio @ https://download.pytorch.org/whl/cu118/torchaudio-2.0.2%2Bcu118-cp310-cp310-linux_x86_64.whl ; sys_platform == 'linux'",{% endif %}{% if python_version == "3-11" %}
     "torchaudio @ https://download.pytorch.org/whl/cu118/torchaudio-2.0.2%2Bcu118-cp311-cp311-linux_x86_64.whl ; sys_platform == 'linux'",{% endif %}
 ]
 {% endif %}

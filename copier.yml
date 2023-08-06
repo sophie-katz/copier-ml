@@ -95,8 +95,12 @@ copyright_holder:
 python_version:
   type: str
   help: Python 3.x version
-  default: 3.11
-  placeholder: " 3.x"
+  choices:
+    3.8: 3-8
+    3.9: 3-9
+    3.10: 3-10
+    3.11: 3-11
+  default: 3-11
 
 use_pytorch:
   type: bool
@@ -123,7 +127,7 @@ use_scikit_learn:
   help: Use Scikit?
   default: false
 
-use_comet_ai:
+use_comet:
   type: bool
   help: Add comet.ai integration?
   default: true
