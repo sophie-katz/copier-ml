@@ -20,8 +20,7 @@
 import dataclasses
 import os
 import shutil
-import io
-from typing import Callable, Optional, Dict
+from typing import Callable, Dict, List
 
 COPIES_DIRECTORY = os.path.join(os.getcwd(), "copies")
 
@@ -40,8 +39,7 @@ def before_integration_test(copy_name: str) -> None:
 @dataclasses.dataclass
 class FileTest:
     optional: bool = False
-    on_read_binary: Optional[Callable[[io.BufferedReader], None]] = None
-    on_read_text: Optional[Callable[[io.TextIOWrapper], None]] = None
+    on_text: List[Callable[[str], None]] = dataclasses.field(default_factory=list)
 
     def run(self, path: str) -> None:
         if not self.optional:
@@ -50,17 +48,13 @@ class FileTest:
             ), f"path is expected to exist and be a file: {path!r}"
 
         if os.path.isfile(path):
-            if self.on_read_binary is not None and self.on_read_text is not None:
-                raise Exception(
-                    "FileTest cannot have both on_read_binary and on_read_text set"
-                )
-            elif self.on_read_binary is not None:
-                with open(path, mode="rb") as file:
-                    self.on_read_binary(file)
-            elif self.on_read_text is not None:
-                with open(path, encoding="utf-8") as file:
-                    self.on_read_text(file)
+            text: str
 
+            with open(path, mode="r") as file:
+                text = file.read()
+
+            for f in self.on_text:
+                f(text)
 
 @dataclasses.dataclass
 class DirectoryTest:

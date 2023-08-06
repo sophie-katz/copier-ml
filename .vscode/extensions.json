@@ -5,6 +5,7 @@
         "wayou.vscode-todo-highlight",
         "ms-python.pylint",
         "ms-python.isort",
-        "ms-python.black-formatter"
+        "ms-python.black-formatter",
+        "ms-python.mypy-type-checker"
     ]
 }

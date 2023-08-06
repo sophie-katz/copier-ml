@@ -24,6 +24,7 @@ Then tests rendered files against expected results.
 
 
 import os
+import re
 
 import copier
 import pytest
@@ -41,7 +42,7 @@ def _create_data_base(
     license: str, python_version: str, cuda_version: str
 ) -> Dict[str, str]:
     return {
-        "project_name": "test_project",
+        "project_name": "Language Model",
         "project_description": "A toy language model using transformers.",
         "module_name": "language_model",
         "package_name": "language-model",
@@ -81,34 +82,218 @@ def _create_data_maximal(
     return base
 
 
-def _create_directory_test_minimal(has_license: bool) -> DirectoryTest:
+def _test_file_empty(text: str) -> None:
+    assert len(text) == 0
+
+
+def _test_file_starts_with_license_hashes(has_license: bool, text: str) -> None:
+    if has_license:
+        assert text.startswith("# Copyright ")
+    else:
+        assert not text.startswith("\n")
+        assert not text.startswith("# Copyright")
+
+
+def _test_file_starts_with_license_html(has_license: bool, text: str) -> None:
+    if has_license:
+        assert text.startswith("<!--\nCopyright ")
+    else:
+        assert not text.startswith("\n")
+        assert not text.startswith("<!--\nCopyright ")
+
+
+def _test_file_license_content(expected_license: str, text: str) -> None:
+    actual_license: str
+
+    if "Permission is hereby granted" in text:
+        actual_license = "mit"
+    elif "This file is part of" in text:
+        actual_license = "lgpl30"
+    else:
+        actual_license = "none"
+
+    assert expected_license == actual_license
+
+
+def _test_file_two_newlines_after_license_hashes(has_license: bool, text: str) -> None:
+    if has_license:
+        newline_count = 0
+
+        for line in text.splitlines():
+            if line.startswith("#"):
+                if newline_count > 0:
+                    break
+                else:
+                    continue
+            elif len(line) == 0:
+                newline_count += 1
+            else:
+                break
+
+        assert newline_count == 1
+
+
+def _test_readme_licened(has_license: bool, text: str) -> None:
+    if has_license:
+        assert "-->\n\n# " in text
+
+
+PYPROJECT_PATTERN_BAD_SPACING = re.compile(r"[,\[][ \t]*\n[ \t]*\n")
+
+
+def _test_pyproject_toml(text: str) -> None:
+    assert PYPROJECT_PATTERN_BAD_SPACING.search(text) is None
+
+
+def _create_directory_test_minimal(license: str) -> DirectoryTest:
     result = DirectoryTest(
         child_files={
             ".copier-answers.yml": FileTest(),
-            ".env.example.sh": FileTest(),
-            ".gitignore": FileTest(),
+            ".env.example.sh": FileTest(
+                on_text=[
+                    lambda text: _test_file_starts_with_license_hashes(
+                        license != "none", text
+                    ),
+                    lambda text: _test_file_license_content(license, text),
+                    lambda text: _test_file_two_newlines_after_license_hashes(
+                        license != "none", text
+                    ),
+                ]
+            ),
+            ".gitignore": FileTest(
+                on_text=[
+                    lambda text: _test_file_starts_with_license_hashes(
+                        license != "none", text
+                    ),
+                    lambda text: _test_file_license_content(license, text),
+                    lambda text: _test_file_two_newlines_after_license_hashes(
+                        license != "none", text
+                    ),
+                ]
+            ),
             ".pdm-python": FileTest(),
             "pdm.lock": FileTest(),
-            "pyproject.toml": FileTest(),
-            "README.md": FileTest(),
+            "pyproject.toml": FileTest(
+                on_text=[
+                    lambda text: _test_file_starts_with_license_hashes(
+                        license != "none", text
+                    ),
+                    lambda text: _test_file_license_content(license, text),
+                    lambda text: _test_file_two_newlines_after_license_hashes(
+                        license != "none", text
+                    ),
+                    _test_pyproject_toml,
+                ]
+            ),
+            "README.md": FileTest(
+                on_text=[
+                    lambda text: _test_file_starts_with_license_html(
+                        license != "none", text
+                    ),
+                    lambda text: _test_file_license_content(license, text),
+                    lambda text: _test_readme_licened(license != "none", text),
+                ]
+            ),
         },
         child_directories={
             ".venv": DirectoryTest(ignore_children=True),
             "language_model": DirectoryTest(
                 child_files={
-                    "__init__.py": FileTest(),
-                    "settings.py": FileTest(),
+                    "__init__.py": FileTest(on_text=[_test_file_empty]),
+                    "settings.py": FileTest(
+                        on_text=[
+                            lambda text: _test_file_starts_with_license_hashes(
+                                license != "none", text
+                            ),
+                            lambda text: _test_file_license_content(license, text),
+                            lambda text: _test_file_two_newlines_after_license_hashes(
+                                license != "none", text
+                            ),
+                        ]
+                    ),
                 },
                 child_directories={
                     "utils": DirectoryTest(
                         child_files={
-                            "download_test.py": FileTest(),
-                            "download.py": FileTest(),
-                            "extract_test.py": FileTest(),
-                            "extract.py": FileTest(),
-                            "project_paths_test.py": FileTest(),
-                            "project_paths.py": FileTest(),
-                            "__init__.py": FileTest(),
+                            "download_test.py": FileTest(
+                                on_text=[
+                                    lambda text: _test_file_starts_with_license_hashes(
+                                        license != "none", text
+                                    ),
+                                    lambda text: _test_file_license_content(
+                                        license, text
+                                    ),
+                                    lambda text: _test_file_two_newlines_after_license_hashes(
+                                        license != "none", text
+                                    ),
+                                ]
+                            ),
+                            "download.py": FileTest(
+                                on_text=[
+                                    lambda text: _test_file_starts_with_license_hashes(
+                                        license != "none", text
+                                    ),
+                                    lambda text: _test_file_license_content(
+                                        license, text
+                                    ),
+                                    lambda text: _test_file_two_newlines_after_license_hashes(
+                                        license != "none", text
+                                    ),
+                                ]
+                            ),
+                            "extract_test.py": FileTest(
+                                on_text=[
+                                    lambda text: _test_file_starts_with_license_hashes(
+                                        license != "none", text
+                                    ),
+                                    lambda text: _test_file_license_content(
+                                        license, text
+                                    ),
+                                    lambda text: _test_file_two_newlines_after_license_hashes(
+                                        license != "none", text
+                                    ),
+                                ]
+                            ),
+                            "extract.py": FileTest(
+                                on_text=[
+                                    lambda text: _test_file_starts_with_license_hashes(
+                                        license != "none", text
+                                    ),
+                                    lambda text: _test_file_license_content(
+                                        license, text
+                                    ),
+                                    lambda text: _test_file_two_newlines_after_license_hashes(
+                                        license != "none", text
+                                    ),
+                                ]
+                            ),
+                            "project_paths_test.py": FileTest(
+                                on_text=[
+                                    lambda text: _test_file_starts_with_license_hashes(
+                                        license != "none", text
+                                    ),
+                                    lambda text: _test_file_license_content(
+                                        license, text
+                                    ),
+                                    lambda text: _test_file_two_newlines_after_license_hashes(
+                                        license != "none", text
+                                    ),
+                                ]
+                            ),
+                            "project_paths.py": FileTest(
+                                on_text=[
+                                    lambda text: _test_file_starts_with_license_hashes(
+                                        license != "none", text
+                                    ),
+                                    lambda text: _test_file_license_content(
+                                        license, text
+                                    ),
+                                    lambda text: _test_file_two_newlines_after_license_hashes(
+                                        license != "none", text
+                                    ),
+                                ]
+                            ),
+                            "__init__.py": FileTest(on_text=[_test_file_empty]),
                         }
                     )
                 },
@@ -139,16 +324,14 @@ def _create_directory_test_minimal(has_license: bool) -> DirectoryTest:
         },
     )
 
-    if has_license:
+    if license != "none":
         result.child_files["LICENSE.txt"] = FileTest()
 
     return result
 
 
-def _create_directory_test_maximal(
-    has_license: bool, cuda_version: str
-) -> DirectoryTest:
-    minimal = _create_directory_test_minimal(has_license)
+def _create_directory_test_maximal(license: str, cuda_version: str) -> DirectoryTest:
+    minimal = _create_directory_test_minimal(license)
 
     minimal.child_directories[".vscode"] = DirectoryTest(
         child_files={
@@ -186,7 +369,7 @@ def _run_copy_test(
 minimal_parameters = []
 maximal_parameters = []
 
-for license in ["none", "mit", "lgpl30"]:
+for license in ["mit", "lgpl30"]:
     minimal_parameters.append((license, "3.11"))
 
 for python_version in ["3.8", "3.9", "3.10", "3.11"]:
@@ -204,7 +387,7 @@ def test_minimal(license: str, python_version: str) -> None:
     _run_copy_test(
         copy_name=f"minimal-{license}-{python_version}",
         data=_create_data_minimal(license=license, python_version=python_version),
-        directory_test=_create_directory_test_minimal(license != "none"),
+        directory_test=_create_directory_test_minimal(license),
     )
 
 
@@ -212,9 +395,9 @@ def test_minimal(license: str, python_version: str) -> None:
 def test_maximal(python_version: str, cuda_version: str) -> None:
     """Test maximal Copier usage."""
     _run_copy_test(
-        copy_name=f"maximal-{license}-{python_version}-{cuda_version}",
+        copy_name=f"maximal-{python_version}-{cuda_version}",
         data=_create_data_maximal(
             license=license, python_version=python_version, cuda_version=cuda_version
         ),
-        directory_test=_create_directory_test_maximal(license != "none", cuda_version),
+        directory_test=_create_directory_test_maximal(license, cuda_version),
     )
