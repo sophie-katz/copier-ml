@@ -7,7 +7,6 @@ dependencies = [{% if use_comet %}
     "comet-ml>=3.33.8",{% endif %}{% if use_pytorch %}
     "lightning>=2.0.6",{% endif %}{% if use_tensorflow %}
     "tensorflow>=2.13,<2.14",
-    "tensorflow-io-gcs-filesystem>=0.33.0",
     "tensorflow-datasets>=4.9.2",
     "tensorflow-hub>=0.14.0",
     "keras-tuner>=1.3.5",{% endif %}{% if use_scikit_learn %}
@@ -23,10 +22,11 @@ readme = "README.md"
 [tool.setuptools]
 py-modules = ["{{ module_name }}"]
 
-{% if use_pytorch %}[tool.pdm.scripts]
-pre_lock = { shell = "python3 scripts/check_pdm_lock.py" }
-pre_install = { shell = "python3 scripts/check_pdm_lock.py" }
-{% endif %}
+[tool.pdm.scripts]
+pre_lock = { shell = "python3 scripts/pdm_lockfile.py check" }
+pre_install = { shell = "python3 scripts/pdm_lockfile.py check" }
+lockfile = { shell = "python3 scripts/pdm_lockfile.py" }
+
 [tool.pdm.dev-dependencies]
 dev = [
     "bandit>=1.7.5",
@@ -46,10 +46,11 @@ dev = [
     "seaborn>=0.12.2",
     "vulture>=2.7",
     "pyyaml>=6.0.1",
+    "colored>=2.2.3",
 ]
 {%if use_pytorch %}
 [project.optional-dependencies]
-cpu = [
+default = [
     "torch==2.0.1 ; sys_platform == 'win32'",
     "torchvision==0.15.2 ; sys_platform == 'win32'",
     "torchaudio==2.0.2 ; sys_platform == 'win32'",

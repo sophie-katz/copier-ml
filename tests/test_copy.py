@@ -160,7 +160,7 @@ def _test_file_formatting_black(path: str) -> None:
     assert result.returncode == 0
 
 
-def _create_directory_test_minimal(license: str) -> DirectoryTest:
+def _create_directory_test_minimal(license: str, cuda_version: str) -> DirectoryTest:
     result = DirectoryTest(
         child_files={
             ".copier-answers.yml": FileTest(),
@@ -189,6 +189,7 @@ def _create_directory_test_minimal(license: str) -> DirectoryTest:
                 ]
             ),
             ".pdm-python": FileTest(),
+            f"pdm.{sys.platform}.{('default' if cuda_version == 'not_applicable' else cuda_version)}.lock": FileTest(),
             "pdm.lock": FileTest(),
             "pyproject.toml": FileTest(
                 on_text=[
@@ -369,6 +370,15 @@ def _create_directory_test_minimal(license: str) -> DirectoryTest:
                     ),
                 }
             ),
+            "scripts": DirectoryTest(
+                child_files={
+                    "pdm_lockfile.py": FileTest(
+                        on_path=[
+                            _test_file_formatting_black,
+                        ]
+                    ),
+                }
+            )
         },
     )
 
@@ -379,7 +389,7 @@ def _create_directory_test_minimal(license: str) -> DirectoryTest:
 
 
 def _create_directory_test_maximal(license: str, cuda_version: str) -> DirectoryTest:
-    minimal = _create_directory_test_minimal(license)
+    minimal = _create_directory_test_minimal(license, cuda_version)
 
     minimal.child_directories[".vscode"] = DirectoryTest(
         child_files={
@@ -388,26 +398,9 @@ def _create_directory_test_maximal(license: str, cuda_version: str) -> Directory
         }
     )
 
-    minimal.child_directories["scripts"] = DirectoryTest(
-        child_files={
-            "check_pdm_lock.py": FileTest(
-                on_path=[
-                    _test_file_formatting_black,
-                ]
-            ),
-            "use_pdm_lock.py": FileTest(
-                on_path=[
-                    _test_file_formatting_black,
-                ]
-            ),
-        }
-    )
-
     minimal.child_directories["language_model"].child_directories["utils"].child_files[
         "comet.py"
     ] = FileTest()
-
-    minimal.child_files[f"pdm.{cuda_version}.lock"] = FileTest()
 
     return minimal
 
@@ -446,9 +439,9 @@ for python_version in ["3-8", "3-9", "3-10", "3-11"]:
 
 for python_version in ["3-8", "3-9", "3-10", "3-11"]:
     if sys.platform == "darwin":
-        maximal_parameters.append((python_version, "cpu"))
+        maximal_parameters.append((python_version, "default"))
     else:
-        for cuda_version in ["cpu", "cuda-11-7", "cuda-11-8"]:
+        for cuda_version in ["default", "cuda-11-7", "cuda-11-8"]:
             maximal_parameters.append((python_version, cuda_version))
 
 
@@ -458,7 +451,7 @@ def test_minimal(license: str, python_version: str) -> None:
     _run_copy_test(
         copy_name=f"minimal-{license}-{python_version}",
         data=_create_data_minimal(license=license, python_version=python_version),
-        directory_test=_create_directory_test_minimal(license),
+        directory_test=_create_directory_test_minimal(license, "not_applicable"),
     )
 
 

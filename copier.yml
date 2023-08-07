@@ -116,7 +116,7 @@ cuda_version:
   type: str
   help: CUDA version on your machine (other users can specify theirs when using the project)
   choices:
-    CPU only: cpu
+    Default (CPU or MPS): default
     11.7: cuda-11-7
     11.8: cuda-11-8
   when: |-

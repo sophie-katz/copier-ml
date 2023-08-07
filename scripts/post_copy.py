@@ -26,7 +26,7 @@ import sys
 from typing import List, Dict
 
 PYTHON_VERSION_CHOICES = ["3-8", "3-9", "3-10", "3-11"]
-CUDA_VERSION_CHOICES = ["not_applicable", "cpu", "cuda-11-7", "cuda-11-8"]
+CUDA_VERSION_CHOICES = ["not_applicable", "default", "cuda-11-7", "cuda-11-8"]
 
 
 def create_argument_parser() -> argparse.ArgumentParser:
@@ -99,23 +99,25 @@ def create_venv(pdm_path: str, copy_directory: str, python_version: str) -> None
         sys.exit(1)
 
 
-def has_pdm_lock(cuda_version: str) -> bool:
-    return cuda_version != "not_applicable"
-
-
 def get_pdm_install_arguments(pdm_path: str, cuda_version: str) -> List[str]:
-    if has_pdm_lock(cuda_version):
+    if cuda_version == "not_applicable":
+        return [
+            pdm_path,
+            "install",
+            "-L",
+            f"pdm.{sys.platform}.default.lock",
+            "--skip=:pre",
+        ]
+    else:
         return [
             pdm_path,
             "install",
             "-G",
             cuda_version,
             "-L",
-            f"pdm.{cuda_version}.lock",
+            f"pdm.{sys.platform}.{cuda_version}.lock",
             "--skip=:pre",
         ]
-    else:
-        return [pdm_path, "install", "--skip=:pre"]
 
 
 def pdm_install(pdm_path: str, cuda_version: str) -> None:
@@ -135,27 +137,15 @@ def pdm_install(pdm_path: str, cuda_version: str) -> None:
         sys.exit(1)
 
 
-def use_pdm_lock(cuda_version: str) -> None:
+def use_pdm_lock(pdm_path: str, cuda_version: str) -> None:
     print(f"info: using pdm lock file for {cuda_version}...")
 
-    result = subprocess.run(["python3", "scripts/use_pdm_lock.py", cuda_version])
+    result = subprocess.run([pdm_path, "run", "lockfile", "use", "default" if cuda_version == "not_applicable" else cuda_version])
 
     if result.returncode == 0:
         print("info: pdm lock file successfully used")
     else:
         print(f"error: unable to use pdm lock file (exit status: {result.returncode})")
-        sys.exit(1)
-
-
-def check_pdm_lock() -> None:
-    print(f"info: checking pdm lock file...")
-
-    result = subprocess.run(["python3", "scripts/check_pdm_lock.py"])
-
-    if result.returncode == 0:
-        print("info: pdm lock file is valid")
-    else:
-        print(f"error: pdm lock file is invalid (exit status: {result.returncode})")
         sys.exit(1)
 
 
@@ -191,9 +181,9 @@ if __name__ == "__main__":
 
     pdm_install(pdm_path, arguments.cuda_version)
 
-    if has_pdm_lock(arguments.cuda_version):
-        use_pdm_lock(arguments.cuda_version)
-        check_pdm_lock()
+    # if has_pdm_lock(arguments.cuda_version):
+    use_pdm_lock(pdm_path, arguments.cuda_version)
+    #     check_pdm_lock()
 
     print()
     print(
