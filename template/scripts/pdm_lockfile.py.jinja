@@ -26,9 +26,9 @@ import os
 import re
 import subprocess
 import sys
-from typing import List, Tuple{%if python_version != "3-8" %}
+from typing import List, Tuple
 
-from colored import Fore, Style{% endif %}
+from termcolor import colored
 
 
 PDM_LOCKFILE_PATTERN = re.compile(r"pdm\.([^.]+)\.([^.]+)\.lock")
@@ -36,30 +36,30 @@ CURRENT_PDM_LOCKFILE = "pdm.lock"
 
 
 def print_info(*args) -> None:
-    {%if python_version != "3-8" %}print(f"{Fore.green}==> info:{Style.reset}", *args){% else %}print(f"==> info:", *args){% endif %}
+    print(colored("==> info:", "green"), *args)
 
 
 def print_note(*args) -> None:
-    {%if python_version != "3-8" %}print(f"{Fore.grey_69}  > note:{Style.reset}", *args){% else %}print(f"  > note:", *args){% endif %}
+    print(colored("  > note:", "light_grey"), *args)
 
 
 def print_fix(*args) -> None:
-    {%if python_version != "3-8" %}print(f"{Fore.magenta}  > fix:{Style.reset}", *args){% else %}print(f"  > fix:", *args){% endif %}
+    print(colored("  > fix:", "magenta"), *args)
 
 
 def print_error(*args) -> None:
-    {%if python_version != "3-8" %}print(f"{Fore.red}==> error:{Style.reset}", *args){% else %}print(f"==> error:", *args){% endif %}
+    print(colored("==> error:", "red"), *args)
 
 
 def print_command_running(*args) -> None:
-    {%if python_version != "3-8" %}print(f"{Fore.orange_1}  > running:{Style.reset}", *args){% else %}print(f"  > running:", *args){% endif %}
+    print(colored("  > running:", "yellow"), *args)
 
 
 def print_command_exit_status(exit_status: int) -> None:
     if exit_status == 0:
-        {%if python_version != "3-8" %}print(f"{Fore.green}  > exit status:{Style.reset}", *args){% else %}print(f"  > exit status:", *args){% endif %}
+        print(colored("  > exit status: 0", "green"))
     else:
-        {%if python_version != "3-8" %}print(f"{Fore.red}  > exit status:{Style.reset}", *args){% else %}print(f"  > exit status:", *args){% endif %}
+        print(colored(f"  > exit status: {exit_status}", "red"))
 
 
 def run_command(*args) -> bool:
