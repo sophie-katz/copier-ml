@@ -26,40 +26,40 @@ import os
 import re
 import subprocess
 import sys
-from typing import List, Tuple
+from typing import List, Tuple{%if python_version != "3-8" %}
 
-from colored import Fore, Style
+from colored import Fore, Style{% endif %}
 
 
 PDM_LOCKFILE_PATTERN = re.compile(r"pdm\.([^.]+)\.([^.]+)\.lock")
 CURRENT_PDM_LOCKFILE = "pdm.lock"
 
 
-def print_info(*args) -> None:
-    print(f"{Fore.green}==> info:{Style.reset}", *args)
+def print_info(*args) -> None:{%if python_version != "3-8" %}
+    print(f"{Fore.green}==> info:{Style.reset}", *args){% else %}print(f"==> info:", *args){% endif %}
 
 
-def print_note(*args) -> None:
-    print(f"{Fore.grey_69}  > note:{Style.reset}", *args)
+def print_note(*args) -> None:{%if python_version != "3-8" %}
+    print(f"{Fore.grey_69}  > note:{Style.reset}", *args){% else %}print(f"  > note:", *args){% endif %}
 
 
-def print_fix(*args) -> None:
-    print(f"{Fore.magenta}  > fix:{Style.reset}", *args)
+def print_fix(*args) -> None:{%if python_version != "3-8" %}
+    print(f"{Fore.magenta}  > fix:{Style.reset}", *args){% else %}print(f"  > fix:", *args){% endif %}
 
 
-def print_error(*args) -> None:
-    print(f"{Fore.red}==> error:{Style.reset}", *args)
+def print_error(*args) -> None:{%if python_version != "3-8" %}
+    print(f"{Fore.red}==> error:{Style.reset}", *args){% else %}print(f"==> error:", *args){% endif %}
 
 
-def print_command_running(*args) -> None:
-    print(f"{Fore.orange_1}  > running: {list(args)}{Style.reset}")
+def print_command_running(*args) -> None:{%if python_version != "3-8" %}
+    print(f"{Fore.orange_1}  > running:{Style.reset}", *args){% else %}print(f"  > running:", *args){% endif %}
 
 
 def print_command_exit_status(exit_status: int) -> None:
-    if exit_status == 0:
-        print(f"{Fore.green}  > exit status: 0{Style.reset}")
-    else:
-        print(f"{Fore.red}  > exit status: {exit_status}{Style.reset}")
+    if exit_status == 0:{%if python_version != "3-8" %}
+        print(f"{Fore.green}  > exit status:{Style.reset}", *args){% else %}print(f"  > exit status:", *args){% endif %}
+    else:{%if python_version != "3-8" %}
+        print(f"{Fore.red}  > exit status:{Style.reset}", *args){% else %}print(f"  > exit status:", *args){% endif %}
 
 
 def run_command(*args) -> bool:
