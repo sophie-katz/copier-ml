@@ -34,7 +34,7 @@ import shutil
 import subprocess
 import sys
 
-from .constants import PYTHON_VERSION_CHOICES, CUDA_VERSION_CHOICES
+from constants import PYTHON_VERSION_CHOICES, CUDA_VERSION_CHOICES
 
 
 def create_argument_parser() -> argparse.ArgumentParser:
