@@ -378,7 +378,7 @@ def _create_directory_test_minimal(license: str, cuda_version: str) -> Directory
                         ]
                     ),
                 }
-            )
+            ),
         },
     )
 
@@ -422,7 +422,49 @@ def _run_copy_test(
 
     directory_test.run(copy_directory)
 
-    result = subprocess.run(["pdm", "run", "pytest"], cwd=copy_directory)
+    result = subprocess.run(["pdm", "run", "lint:mypy"], cwd=copy_directory)
+
+    assert result.returncode == 0
+
+    result = subprocess.run(["pdm", "run", "lint:pycodestyle"], cwd=copy_directory)
+
+    assert result.returncode == 0
+
+    result = subprocess.run(["pdm", "run", "lint:pydocstyle"], cwd=copy_directory)
+
+    assert result.returncode == 0
+
+    result = subprocess.run(["pdm", "run", "lint:bandit"], cwd=copy_directory)
+
+    assert result.returncode == 0
+
+    result = subprocess.run(["pdm", "run", "lint:vulture"], cwd=copy_directory)
+
+    assert result.returncode == 0
+
+    result = subprocess.run(["pdm", "run", "lint:isort", "--df"], cwd=copy_directory)
+
+    assert result.returncode == 0
+
+    result = subprocess.run(["pdm", "run", "lint"], cwd=copy_directory)
+
+    assert result.returncode == 0
+
+    result = subprocess.run(
+        ["pdm", "run", "format:black", "--diff"], cwd=copy_directory
+    )
+
+    assert result.returncode == 0
+
+    result = subprocess.run(["pdm", "run", "format:isort", "-c"], cwd=copy_directory)
+
+    assert result.returncode == 0
+
+    result = subprocess.run(["pdm", "run", "format"], cwd=copy_directory)
+
+    assert result.returncode == 0
+
+    result = subprocess.run(["pdm", "run", "test"], cwd=copy_directory)
 
     assert result.returncode == 0
 

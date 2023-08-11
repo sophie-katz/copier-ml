@@ -24,8 +24,25 @@ py-modules = ["{{ module_name }}"]
 
 [tool.pdm.scripts]
 pre_lock = { shell = "python3 scripts/pdm_lockfile.py check" }
-pre_install = { shell = "python3 scripts/pdm_lockfile.py check" }
 lockfile = { shell = "python3 scripts/pdm_lockfile.py" }
+"lint:mypy" = { shell = "mypy {{ module_name }}" }
+"lint:pycodestyle" = { shell = "pycodestyle --ignore E501,W503,E261 {{ module_name }}" }
+"lint:pydocstyle" = { shell = "pydocstyle {{ module_name }}" }
+"lint:bandit" = { shell = "bandit -s B101 -r {{ module_name }}" }
+"lint:vulture" = { shell = "vulture {{ module_name }}" }
+"lint:isort" = { shell = "isort -c {{ module_name }}" }
+lint = { composite = [
+    "lint:mypy",
+    "lint:pycodestyle",
+    "lint:pydocstyle",
+    "lint:bandit",
+    "lint:vulture",
+    "lint:isort",
+] }
+"format:black" = { shell = "black language_model" }
+"format:isort" = { shell = "isort language_model" }
+format = { composite = ["format:black", "format:isort"] }
+test = { shell = "pytest language_model" }
 
 [tool.pdm.dev-dependencies]
 dev = [
@@ -47,6 +64,8 @@ dev = [
     "vulture>=2.7",
     "pyyaml>=6.0.1",
     "termcolor>=2.3.0",
+    "types-requests>=2.31.0.2",
+    "types-tqdm>=4.66.0.0",
 ]
 {%if use_pytorch %}
 [project.optional-dependencies]

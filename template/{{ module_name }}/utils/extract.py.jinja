@@ -1,9 +1,9 @@
 {% include('includes/license_blurb_hashes.jinja') %}"""Utility functions for working with ZIP archives."""
 
 
-from typing import Union
 import pathlib
 import zipfile
+from typing import Union
 
 from tqdm import tqdm
 
@@ -34,3 +34,6 @@ def extract_archive(
         progress_bar.close()
 
     print("  Extraction complete.")
+
+
+__all__ = ["extract_archive"]

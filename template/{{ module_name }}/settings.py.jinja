@@ -1,7 +1,8 @@
 {% include('includes/license_blurb_hashes.jinja') %}"""Project settings loaded from environment variables."""
 
 
-from pydantic_settings import BaseSettings, SettingsConfigDict
+# pycodestyle: disable=E621
+from pydantic_settings import BaseSettings, SettingsConfigDict  # type: ignore
 
 
 class Settings(BaseSettings):
@@ -15,3 +16,6 @@ class Settings(BaseSettings):
     comet_api_key: str
     comet_project_name: str
     comet_workspace: str
+
+
+__all__ = ["Settings"]
