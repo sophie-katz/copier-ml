@@ -59,7 +59,7 @@ def _create_data_base(
 
 
 def _create_data_minimal(license: str, python_version: str) -> Dict[str, str]:
-    base = _create_data_base(license, python_version, "not_applicable")
+    base = _create_data_base(license, python_version, "default")
 
     base["use_pytorch"] = "false"
     base["use_tensorflow"] = "false"
@@ -189,7 +189,7 @@ def _create_directory_test_minimal(license: str, cuda_version: str) -> Directory
                 ]
             ),
             ".pdm-python": FileTest(),
-            f"pdm.{sys.platform}.{('default' if cuda_version == 'not_applicable' else cuda_version)}.lock": FileTest(),
+            f"pdm.{sys.platform}.{('default' if cuda_version == 'default' else cuda_version)}.lock": FileTest(),
             "pdm.lock": FileTest(),
             "pyproject.toml": FileTest(
                 on_text=[
@@ -221,7 +221,21 @@ def _create_directory_test_minimal(license: str, cuda_version: str) -> Directory
             "__pypackages__": DirectoryTest(ignore_children=True, optional=True),
             "language_model": DirectoryTest(
                 child_files={
-                    "__init__.py": FileTest(on_text=[_test_file_empty]),
+                    "__init__.py": FileTest(
+                        on_text=[
+                            lambda text: _test_file_starts_with_license_hashes(
+                                license != "none", text
+                            ),
+                            lambda text: _test_file_license_content(license, text),
+                            lambda text: _test_file_two_newlines_after_license_hashes(
+                                license != "none", text
+                            ),
+                            _test_file_python_version_with_dot,
+                        ],
+                        on_path=[
+                            _test_file_formatting_black,
+                        ],
+                    ),
                     "settings.py": FileTest(
                         on_text=[
                             lambda text: _test_file_starts_with_license_hashes(
@@ -340,7 +354,23 @@ def _create_directory_test_minimal(license: str, cuda_version: str) -> Directory
                                     _test_file_formatting_black,
                                 ],
                             ),
-                            "__init__.py": FileTest(on_text=[_test_file_empty]),
+                            "__init__.py": FileTest(
+                                on_text=[
+                                    lambda text: _test_file_starts_with_license_hashes(
+                                        license != "none", text
+                                    ),
+                                    lambda text: _test_file_license_content(
+                                        license, text
+                                    ),
+                                    lambda text: _test_file_two_newlines_after_license_hashes(
+                                        license != "none", text
+                                    ),
+                                    _test_file_python_version_with_dot,
+                                ],
+                                on_path=[
+                                    _test_file_formatting_black,
+                                ],
+                            ),
                         }
                     )
                 },
@@ -438,7 +468,10 @@ def _run_copy_test(
 
     assert result.returncode == 0
 
-    result = subprocess.run(["pdm", "run", "lint:vulture"], cwd=copy_directory)
+    result = subprocess.run(
+        ["pdm", "run", "lint:vulture"],
+        cwd=copy_directory,
+    )
 
     assert result.returncode == 0
 
@@ -493,7 +526,7 @@ def test_minimal(license: str, python_version: str) -> None:
     _run_copy_test(
         copy_name=f"minimal-{license}-{python_version}",
         data=_create_data_minimal(license=license, python_version=python_version),
-        directory_test=_create_directory_test_minimal(license, "not_applicable"),
+        directory_test=_create_directory_test_minimal(license, "default"),
     )
 
 

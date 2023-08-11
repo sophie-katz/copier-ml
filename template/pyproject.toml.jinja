@@ -29,7 +29,7 @@ lockfile = { shell = "python3 scripts/pdm_lockfile.py" }
 "lint:pycodestyle" = { shell = "pycodestyle --ignore E501,W503,E261 {{ module_name }}" }
 "lint:pydocstyle" = { shell = "pydocstyle {{ module_name }}" }
 "lint:bandit" = { shell = "bandit -s B101 -r {{ module_name }}" }
-"lint:vulture" = { shell = "vulture {{ module_name }}" }
+"lint:vulture" = { shell = "vulture --ignore-names model_config,comet_enabled,comet_api_key,comet_project_name,comet_workspace,create_experiment {{ module_name }}" }
 "lint:isort" = { shell = "isort -c {{ module_name }}" }
 lint = { composite = [
     "lint:mypy",
