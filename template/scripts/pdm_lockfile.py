@@ -30,32 +30,45 @@ from typing import List, Tuple
 
 from termcolor import colored
 
-
+# The regex pattern for lockfiles
 PDM_LOCKFILE_PATTERN = re.compile(r"pdm\.([^.]+)\.([^.]+)\.lock")
+
+# The filename of the current lockfile that we symlink to the actual lockfile
 CURRENT_PDM_LOCKFILE = "pdm.lock"
 
 
 def print_info(*args) -> None:
+    """Function to print an info message to the console."""
     print(colored("==> info:", "green"), *args)
 
 
 def print_note(*args) -> None:
+    """Function to print a note message to the console."""
     print(colored("  > note:", "light_grey"), *args)
 
 
 def print_fix(*args) -> None:
+    """Function to print a fix message to the console."""
     print(colored("  > fix:", "magenta"), *args)
 
 
 def print_error(*args) -> None:
+    """Function to print an error message to the console."""
     print(colored("==> error:", "red"), *args)
 
 
 def print_command_running(*args) -> None:
+    """
+    Function to print a message to the console to indicate that a command is being run.
+    """
     print(colored("  > running:", "yellow"), *args)
 
 
 def print_command_exit_status(exit_status: int) -> None:
+    """
+    Function to print a message to the console to indicate the exit status of the
+    last command.
+    """
     if exit_status == 0:
         print(colored("  > exit status: 0", "green"))
     else:
@@ -63,6 +76,15 @@ def print_command_exit_status(exit_status: int) -> None:
 
 
 def run_command(*args) -> bool:
+    """
+    Helper function to run a command.
+
+    Prints messages to describe what's happening.
+
+    # Returns
+
+    ``True`` if the command succeeded, ``False`` otherwise.
+    """
     print_command_running(*args)
 
     result = subprocess.run(args)
@@ -73,6 +95,11 @@ def run_command(*args) -> bool:
 
 
 def ensure_pdm_lockfile_valid() -> None:
+    """
+    Ensure that the lockfile is a valid symlink to an actual lockfile.
+
+    Exits if not.
+    """
     if os.path.exists(CURRENT_PDM_LOCKFILE) and not os.path.islink(
         CURRENT_PDM_LOCKFILE
     ):
@@ -87,10 +114,12 @@ def ensure_pdm_lockfile_valid() -> None:
 
 
 def get_pdm_lockfile_name(group_name: str) -> str:
+    """Gets the lockfile name for a given group and the current platform."""
     return f"pdm.{sys.platform}.{group_name}.lock"
 
 
 def use_pdm_lockfile(group_name: str) -> None:
+    """Symlinks the current lockfile to the specified one."""
     if os.path.exists(CURRENT_PDM_LOCKFILE):
         os.remove(CURRENT_PDM_LOCKFILE)
 
@@ -100,6 +129,13 @@ def use_pdm_lockfile(group_name: str) -> None:
 
 
 def list_pdm_lockfiles() -> List[Tuple[bool, str, str]]:
+    """
+    Lists out the current available lockfiles.
+
+    # Returns
+
+    A list of tuples ``(is_currently_used, platform, group_name)``.
+    """
     results = []
 
     for filename in os.listdir():
@@ -115,6 +151,7 @@ def list_pdm_lockfiles() -> List[Tuple[bool, str, str]]:
 
 
 def command_check(arguments: argparse.Namespace) -> None:
+    """Command to check that the lockfile is set up correctly."""
     if not os.path.exists(CURRENT_PDM_LOCKFILE):
         print_error(f"no lockfile set")
         print()
@@ -138,6 +175,7 @@ def command_check(arguments: argparse.Namespace) -> None:
 
 
 def command_list(arguments: argparse.Namespace) -> None:
+    """Command to list the available lockfiles."""
     pdm_lockfiles = list_pdm_lockfiles()
 
     if len(pdm_lockfiles) > 0:
@@ -154,6 +192,7 @@ def command_list(arguments: argparse.Namespace) -> None:
 
 
 def command_use(arguments: argparse.Namespace) -> None:
+    """Command to use a lockfile."""
     pdm_lockfiles = list_pdm_lockfiles()
 
     found = False
@@ -190,6 +229,7 @@ def command_use(arguments: argparse.Namespace) -> None:
 
 
 def command_add(arguments: argparse.Namespace) -> None:
+    """Command to add a new lockfile."""
     ensure_pdm_lockfile_valid()
 
     print_info(f"adding lockfile for group '{arguments.group_name}'...")
@@ -223,6 +263,11 @@ def command_add(arguments: argparse.Namespace) -> None:
 
 
 def create_argument_parser() -> argparse.ArgumentParser:
+    """
+    Creates an argument parser.
+
+    This defines the command-line arguments for this script.
+    """
     argument_parser = argparse.ArgumentParser()
 
     argument_subparsers = argument_parser.add_subparsers(title="subcommands")
@@ -247,10 +292,14 @@ def create_argument_parser() -> argparse.ArgumentParser:
 
 
 def main() -> None:
+    """Main function."""
+    # Create argument parser
     argument_parser = create_argument_parser()
 
+    # Parse command-line arguments
     arguments = argument_parser.parse_args()
 
+    # Call the selected command
     arguments.func(arguments)
 
 

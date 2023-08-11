@@ -9,7 +9,13 @@ from ..settings import Settings
 
 
 def create_experiment(settings: Settings) -> Optional[Experiment]:
-    """Create a Comet experiment."""
+    """Create a Comet experiment.
+    
+    Arguments
+    =========
+    settings: Settings
+        The settings object which is used to provide API configuration for Comet.
+    """
     if settings.comet_enabled:
         return Experiment(
             api_key=settings.comet_api_key,

@@ -19,8 +19,6 @@ OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE
 OTHER DEALINGS IN THE SOFTWARE.
 -->
 
-# Copier-ML
+This directory contains code that is used to run automatic end-to-end tests of the template under a wide variety of configurations and environments.
 
-This is a template for machine learning projects using [Copier](https://copier.readthedocs.io/en/stable/).
-
-All documentation, including how to use the template, can be found [in Notion](https://wooden-saturnalia-815.notion.site/Project-template-390c9f12258847a2909473471b8ccd4e).
+See [this Notion page](https://wooden-saturnalia-815.notion.site/Template-repository-structure-ac3d83fc57524b66bea29c8becb82eb6) for more information.

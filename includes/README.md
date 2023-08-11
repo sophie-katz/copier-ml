@@ -19,8 +19,4 @@ OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE
 OTHER DEALINGS IN THE SOFTWARE.
 -->
 
-# Copier-ML
-
-This is a template for machine learning projects using [Copier](https://copier.readthedocs.io/en/stable/).
-
-All documentation, including how to use the template, can be found [in Notion](https://wooden-saturnalia-815.notion.site/Project-template-390c9f12258847a2909473471b8ccd4e).
+This directory contains any includable Jinja2 files. Any Jinja2 code that needs to beused multiple times should go here instead of being duplicated.

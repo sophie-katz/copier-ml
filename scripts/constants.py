@@ -17,31 +17,19 @@
 # CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE
 # OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-[project]
-name = "copier-ml"
-version = "0.1.0"
-description = ""
-authors = [{ name = "Sophie Katz", email = "sophie@sophiekatz.us" }]
-dependencies = ["copier>=8.1.0", "jinja2-time>=0.2.0", "colored>=1.4.4"]
-requires-python = ">=3.8,<3.12"
-readme = "README.md"
-license = { text = "MIT" }
+"""
+Constants for the template.
+"""
 
-[tool.setuptools.packages.find]
-exclude = ["copies", "includes", "scripts", "template", "tests"]
+# These are the different versions of Python this template supports.
+PYTHON_VERSION_CHOICES = ["3-8", "3-9", "3-10", "3-11"]
 
-[tool.pdm.dev-dependencies]
-dev = [
-    "bandit>=1.7.5",
-    "black>=23.7.0",
-    "isort>=5.12.0",
-    "mypy>=1.4.1",
-    "pdm>=2.8.2",
-    "pyarrow>=12.0.1",
-    "pycodestyle>=2.11.0",
-    "pydocstyle>=6.3.0",
-    "pylance>=0.6.0",
-    "pytest-xdist>=3.3.1",
-    "pytest>=7.4.0",
-    "vulture>=2.7",
+# The different version choices for CUDA that are available.
+CUDA_VERSION_CHOICES = [
+    # Default usually means CPU only, except on macOS where it means MPS-accelerated if
+    # available.
+    "default",
+    # Different versions of CUDA specifically:
+    "cuda-11-7",
+    "cuda-11-8",
 ]

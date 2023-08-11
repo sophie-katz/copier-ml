@@ -17,19 +17,31 @@
 # CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE
 # OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
+
+"""
+A script that is run after copier has finished copying files.
+
+See
+[this script's documentation in Notion](https://wooden-saturnalia-815.notion.site/Template-repository-structure-ac3d83fc57524b66bea29c8becb82eb6)
+for more details.
+"""
+
+
+from typing import List
 import argparse
 import os
-import re
 import shutil
 import subprocess
 import sys
-from typing import List, Dict
 
-PYTHON_VERSION_CHOICES = ["3-8", "3-9", "3-10", "3-11"]
-CUDA_VERSION_CHOICES = ["not_applicable", "default", "cuda-11-7", "cuda-11-8"]
+from .constants import PYTHON_VERSION_CHOICES, CUDA_VERSION_CHOICES
 
 
 def create_argument_parser() -> argparse.ArgumentParser:
+    """Define the command line arguments for this script.
+
+    Can exit the script if the arguments are invalid.
+    """
     parser = argparse.ArgumentParser(
         description="Post copy script for the ML copier template"
     )
@@ -44,18 +56,18 @@ def create_argument_parser() -> argparse.ArgumentParser:
     parser.add_argument(
         "--cuda-version",
         type=str,
-        help="The CUDA version to use (not_applicable means that no dependencies use CUDA)",
+        help="The CUDA version to use",
         choices=CUDA_VERSION_CHOICES,
     )
 
     return parser
 
 
-def get_arguments() -> argparse.Namespace:
-    argument_parser = create_argument_parser()
+def validate_arguments(argument_namespace: argparse.Namespace) -> None:
+    """Validate the arguments passed to the script.
 
-    argument_namespace = argument_parser.parse_args()
-
+    Can exit the script if the arguments are invalid.
+    """
     if argument_namespace.python_version is None:
         print("error: required argument --python-version missing")
         sys.exit(1)
@@ -76,21 +88,51 @@ def get_arguments() -> argparse.Namespace:
         )
         sys.exit(1)
 
+
+def get_arguments() -> argparse.Namespace:
+    """Gets the command line arguments for the script and validates them.
+
+    Can exit the script if the arguments are invalid.
+    """
+    argument_parser = create_argument_parser()
+
+    argument_namespace = argument_parser.parse_args()
+
+    validate_arguments(argument_namespace)
+
     return argument_namespace
 
 
 def is_copy_directory(copy_directory: str) -> bool:
+    """Checks if the given directory is an output of copier for this template."""
     return os.path.exists(os.path.join(copy_directory, ".copier-answers.yml"))
 
 
+def initialize_git_repository(copy_directory: str) -> None:
+    """Initializes a git repository in the given directory.
+
+    Can exit the script if it fails."""
+    result = subprocess.run(["git", "init", "."], cwd=copy_directory)
+
+    if result.returncode == 1:
+        sys.exit(1)
+
+
 def venv_exists(copy_directory: str) -> bool:
+    """Checks if the given directory has a venv created."""
     return os.path.exists(os.path.join(copy_directory, ".venv"))
 
 
 def create_venv(pdm_path: str, copy_directory: str, python_version: str) -> None:
+    """Creates a venv for the given directory.
+
+    Can exit the script if it fails.
+    """
     print(f"info: creating venv for python {python_version}...")
 
-    result = subprocess.run([pdm_path, "venv", "create", "-f", python_version])
+    result = subprocess.run(
+        [pdm_path, "venv", "create", "-f", python_version], cwd=copy_directory
+    )
 
     if result.returncode == 0:
         print("info: venv successfully created")
@@ -100,32 +142,29 @@ def create_venv(pdm_path: str, copy_directory: str, python_version: str) -> None
 
 
 def get_pdm_install_arguments(pdm_path: str, cuda_version: str) -> List[str]:
-    if cuda_version == "not_applicable":
-        return [
-            pdm_path,
-            "install",
-            "-L",
-            f"pdm.{sys.platform}.default.lock",
-            "--skip=:pre",
-        ]
-    else:
-        return [
-            pdm_path,
-            "install",
-            "-G",
-            cuda_version,
-            "-L",
-            f"pdm.{sys.platform}.{cuda_version}.lock",
-            "--skip=:pre",
-        ]
+    """Gets the arguments to the PDM install command."""
+    return [
+        pdm_path,
+        "install",
+        "-G",
+        cuda_version,
+        "-L",
+        f"pdm.{sys.platform}.{cuda_version}.lock",
+        "--skip=:pre",
+    ]
 
 
 def pdm_install(pdm_path: str, cuda_version: str) -> None:
-    print(f"info: installing dependencies from pyproject.toml with pdm...")
+    """Installs dependencies with PDM.
+
+    This bootstraps multiple PDM lockfile management. Can exit the script if it fails.
+    """
+    print("info: installing dependencies from pyproject.toml with pdm...")
 
     result = subprocess.run(
         get_pdm_install_arguments(pdm_path, cuda_version),
         env={"PDM_IGNORE_ACTIVE_VENV": "true"},
+        cwd=copy_directory,
     )
 
     if result.returncode == 0:
@@ -137,10 +176,23 @@ def pdm_install(pdm_path: str, cuda_version: str) -> None:
         sys.exit(1)
 
 
-def use_pdm_lock(pdm_path: str, cuda_version: str) -> None:
+def use_pdm_lock(pdm_path: str, copy_directory: str, cuda_version: str) -> None:
+    """Uses the PDM lock file that was just installed.
+
+    Can exit the script if it fails.
+    """
     print(f"info: using pdm lock file for {cuda_version}...")
 
-    result = subprocess.run([pdm_path, "run", "lockfile", "use", "default" if cuda_version == "not_applicable" else cuda_version])
+    result = subprocess.run(
+        [
+            pdm_path,
+            "run",
+            "lockfile",
+            "use",
+            "default" if cuda_version == "not_applicable" else cuda_version,
+        ],
+        cwd=copy_directory,
+    )
 
     if result.returncode == 0:
         print("info: pdm lock file successfully used")
@@ -150,20 +202,10 @@ def use_pdm_lock(pdm_path: str, cuda_version: str) -> None:
 
 
 if __name__ == "__main__":
+    # Get the arguments for this script and validate them.
     arguments = get_arguments()
 
-    copy_directory = os.getcwd()
-
-    result = subprocess.run(["git", "init", "."])
-
-    if result.returncode == 1:
-        sys.exit(1)
-
-    if not is_copy_directory(copy_directory):
-        print(f"error: {copy_directory} must be the output of copier for this template")
-        print()
-        print("note: it does not appear to be because .copier-answers.yml is missing")
-
+    # Detect PDM
     pdm_path = shutil.which("pdm")
 
     if pdm_path is None:
@@ -172,6 +214,19 @@ if __name__ == "__main__":
 
     print(f"info: using pdm at {pdm_path}")
 
+    # Set the copy directory to CWD.
+    copy_directory = os.getcwd()
+
+    # Verify that the copy directory is actually the output of this template.
+    if not is_copy_directory(copy_directory):
+        print(f"error: {copy_directory} must be the output of copier for this template")
+        print()
+        print("note: it does not appear to be because .copier-answers.yml is missing")
+
+    # Initialize a git repository in the copy directory.
+    initialize_git_repository(copy_directory)
+
+    # Initialize a venv if it doesn't already exist.
     if venv_exists(copy_directory):
         print(f"info: {copy_directory} already has a venv")
     else:
@@ -179,12 +234,13 @@ if __name__ == "__main__":
             pdm_path, copy_directory, str(arguments.python_version).replace("-", ".")
         )
 
+    # Install dependencies with PDM.
     pdm_install(pdm_path, arguments.cuda_version)
 
-    # if has_pdm_lock(arguments.cuda_version):
-    use_pdm_lock(pdm_path, arguments.cuda_version)
-    #     check_pdm_lock()
+    # Use the newly created PDM lock.
+    use_pdm_lock(pdm_path, copy_directory, arguments.cuda_version)
 
+    # Print a warning about packages that may not be useful.
     print()
     print(
         "warning: Some packages are installed that may not be immediately useful for this project. Please look at pyproject.toml and remove any that you will not use."
